@@ -1,0 +1,3544 @@
+{
+  "type": "FeatureCollection",
+  "name": "hoa_poly",
+  "crs": {
+    "type": "name",
+    "properties": {
+      "name": "urn:ogc:def:crs:OGC:1.3:CRS84"
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 1,
+        "hoa_name": "Torrey Hills Master HOA",
+        "ccr_url": "HOA_govern_doc_samples/CC&R/cc_rs_-_amended_searchable.pdf",
+        "source": null,
+        "status": "CC&R Verified",
+        "notes": null,
+        "hoa_fees": 22.0,
+        "fees_period": "Monthly",
+        "last_updated": null,
+        "editor": null,
+        "area_m2": null,
+        "area_acre": null,
+        "cc&r_pdf": null,
+        "hoa_services": null,
+        "amenities": [
+          "Open space areas",
+          "Brush management zones",
+          "Slope maintenance areas",
+          "Entryways and lighting",
+          "Drainage facilities",
+          "Trails (planned, not guaranteed)",
+          "Street medians and parkways"
+        ],
+        "hoa_type": "master_association",
+        "master_relationship": null,
+        "parent_master": null,
+        "pets_allowed": "yes",
+        "pets_restrictions": "No animals raised, bred, or kept except a reasonable number of dogs, cats, or household pets. 'Reasonable number' subject to Board interpretation and nuisance standards. Pets must be kept in enclosed yard, enclosure, or on leash. Owner liable for damage or unreasonable noise caused by their animals or those of tenants/guests. Waste must be cleaned up immediately. (Section 10.6)",
+        "rentals_allowed": "unknown",
+        "short_term_allowed": "unknown",
+        "min_lease_days": null,
+        "rentals_restrictions": "No explicit short-term rental restriction found in this document. This is a First Amendment to the original 1998 declaration, amending only Article 3 (voting by delegates). Full rental policy would be in the Original Declaration (recorded 1998-03-27, San Diego County File/Page 1998-0170035).",
+        "parking_restrictions": "No recreational off-road motor vehicles within Master Association Property (Section 6.5). Garages must be used for vehicular parking of owner-occupied cars — conversion to other uses prohibited. No vehicle repair or storage visible from other properties.",
+        "architectural_control": "Architectural review referenced. Full provisions in Original Declaration (1998). Amendment does not modify these articles.",
+        "amendment_threshold": "66-2/3% of total Voting Power of Master Association AND at least 66-2/3% of Class A (non-Declarant) voting power required for amendments (Article 12, Section 12.3(b)). Guest Builder consent required for certain changes.",
+        "board_size": "Three classes of voting membership (Class A: Owners; Class B: Declarant and Guest Builders — 3x votes; Class C: Declarant-appointed directors). Class C membership and director appointment rights terminate upon Declarant's election.",
+        "recorded_date": "2005-07-28",
+        "document_type": "First Amendment to Declaration of Restrictions",
+        "county": "San Diego",
+        "state": "CA",
+        "documents": [
+          {
+            "type": "CC&R",
+            "url": null,
+            "pdf_path": "HOA_govern_doc_samples/CC&R/cc_rs_-_amended_searchable.pdf"
+          }
+        ],
+        "fee_coverage": [
+          "Maintenance Grounds",
+          "Exterior Landscaping"
+        ],
+        "member_responsibility": [
+          "Yard maintenance (owner)",
+          "Architectural review for changes"
+        ],
+        "extraction_confidence": "medium",
+        "extraction_method": "llm (pdfplumber)"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -117.22095446494373,
+              32.92344671220044
+            ],
+            [
+              -117.22118115700663,
+              32.923408731363224
+            ],
+            [
+              -117.2212134,
+              32.9236794
+            ],
+            [
+              -117.22128032671036,
+              32.923695656416456
+            ],
+            [
+              -117.22316505962719,
+              32.92370468631615
+            ],
+            [
+              -117.23118268077587,
+              32.923755240995845
+            ],
+            [
+              -117.2300144,
+              32.92337279999999
+            ],
+            [
+              -117.22975219999996,
+              32.9232575
+            ],
+            [
+              -117.2285182,
+              32.9225019
+            ],
+            [
+              -117.22834552138582,
+              32.922359146417904
+            ],
+            [
+              -117.2285614055395,
+              32.92214364741572
+            ],
+            [
+              -117.23088361886822,
+              32.92064983308706
+            ],
+            [
+              -117.230843,
+              32.9203732
+            ],
+            [
+              -117.23063467137575,
+              32.920261273970716
+            ],
+            [
+              -117.23020239999998,
+              32.9198244
+            ],
+            [
+              -117.2298822,
+              32.919293
+            ],
+            [
+              -117.229592,
+              32.9177226
+            ],
+            [
+              -117.22934159999998,
+              32.9175794
+            ],
+            [
+              -117.22709110000001,
+              32.9178403
+            ],
+            [
+              -117.22560689999997,
+              32.9156669
+            ],
+            [
+              -117.22539529758524,
+              32.91573576481465
+            ],
+            [
+              -117.22350740735513,
+              32.91540336102501
+            ],
+            [
+              -117.22320176604391,
+              32.91512104586617
+            ],
+            [
+              -117.22233284775862,
+              32.9147897600837
+            ],
+            [
+              -117.22229580000001,
+              32.9144911
+            ],
+            [
+              -117.2228554,
+              32.9136714
+            ],
+            [
+              -117.2233586,
+              32.9133974
+            ],
+            [
+              -117.2243063,
+              32.913362
+            ],
+            [
+              -117.225598,
+              32.9136546
+            ],
+            [
+              -117.2256585,
+              32.9129458
+            ],
+            [
+              -117.22526510000002,
+              32.912054
+            ],
+            [
+              -117.22645136088535,
+              32.911244700187396
+            ],
+            [
+              -117.22571508053464,
+              32.910344630349975
+            ],
+            [
+              -117.22452393784569,
+              32.90962677280691
+            ],
+            [
+              -117.2241383,
+              32.9114776
+            ],
+            [
+              -117.223106,
+              32.911274
+            ],
+            [
+              -117.22327372989804,
+              32.91007352318399
+            ],
+            [
+              -117.22382916946088,
+              32.90996508008515
+            ],
+            [
+              -117.22395834145223,
+              32.909281885507944
+            ],
+            [
+              -117.22318780053197,
+              32.90893619901216
+            ],
+            [
+              -117.21719622691819,
+              32.91070734956273
+            ],
+            [
+              -117.21583834211471,
+              32.912563173453954
+            ],
+            [
+              -117.21324747604525,
+              32.9141730317999
+            ],
+            [
+              -117.21374722105254,
+              32.916579764701794
+            ],
+            [
+              -117.2145537140929,
+              32.91711381696451
+            ],
+            [
+              -117.21581817301272,
+              32.91758964210313
+            ],
+            [
+              -117.21660618468502,
+              32.91773816273833
+            ],
+            [
+              -117.21668140000001,
+              32.9164752
+            ],
+            [
+              -117.21691011872838,
+              32.915919307081545
+            ],
+            [
+              -117.22300641078651,
+              32.91619465521923
+            ],
+            [
+              -117.22329550711126,
+              32.91733070543029
+            ],
+            [
+              -117.2237252890605,
+              32.91773360747679
+            ],
+            [
+              -117.22368469574275,
+              32.918091184205764
+            ],
+            [
+              -117.224219279699,
+              32.919095763593035
+            ],
+            [
+              -117.22406204582381,
+              32.91948014221827
+            ],
+            [
+              -117.2236898728223,
+              32.92007492065049
+            ],
+            [
+              -117.21805914689499,
+              32.92098495241159
+            ],
+            [
+              -117.21276235910175,
+              32.92188760315027
+            ],
+            [
+              -117.21275954419042,
+              32.92370746513739
+            ],
+            [
+              -117.21276805675221,
+              32.92370745320717
+            ],
+            [
+              -117.21714140783673,
+              32.92377626214
+            ],
+            [
+              -117.21996599220633,
+              32.92378742113785
+            ],
+            [
+              -117.22082542980516,
+              32.92357737088334
+            ],
+            [
+              -117.22095446494373,
+              32.92344671220044
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 3,
+        "hoa_name": "Del Mar Highlands Master HOA",
+        "ccr_url": "https://delmarhighlandsnhoa.com/ccrs-and-maps/",
+        "source": null,
+        "status": "CC&R Cited",
+        "notes": null,
+        "hoa_fees": 50.0,
+        "fees_period": "Monthly",
+        "fee_coverage": [
+          "Landscaping"
+        ],
+        "last_updated": "2025-11-10T18:48:21.092Z",
+        "editor": null,
+        "area_m2": null,
+        "area_acre": null,
+        "cc&r_pdf": null,
+        "hoa_services": null,
+        "amenities": null,
+        "hoa_type": null,
+        "master_relationship": null,
+        "parent_master": null,
+        "pets_allowed": null,
+        "pets_restrictions": null,
+        "rentals_allowed": null,
+        "short_term_allowed": null,
+        "min_lease_days": null,
+        "rentals_restrictions": null,
+        "parking_restrictions": null,
+        "architectural_control": null,
+        "amendment_threshold": null,
+        "board_size": null,
+        "recorded_date": null,
+        "document_type": null,
+        "county": null,
+        "state": null,
+        "documents": [
+          {
+            "type": "CC&R",
+            "url": "https://delmarhighlandsnhoa.com/ccrs-and-maps/",
+            "pdf_path": null
+          }
+        ],
+        "member_responsibility": null,
+        "extraction_confidence": null,
+        "extraction_method": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -117.2367254626309,
+              32.96372617412201
+            ],
+            [
+              -117.23655399632116,
+              32.96372555700601
+            ],
+            [
+              -117.2345795288247,
+              32.963705082403415
+            ],
+            [
+              -117.23430339999999,
+              32.9622241
+            ],
+            [
+              -117.23452839999997,
+              32.9567637
+            ],
+            [
+              -117.2342927,
+              32.9539093
+            ],
+            [
+              -117.24100984189461,
+              32.95126261824999
+            ],
+            [
+              -117.24122745757231,
+              32.95163185017707
+            ],
+            [
+              -117.24182634397069,
+              32.95138196678334
+            ],
+            [
+              -117.24160958562778,
+              32.95101248644881
+            ],
+            [
+              -117.24264386703943,
+              32.950679359103994
+            ],
+            [
+              -117.24321884645782,
+              32.951367732781065
+            ],
+            [
+              -117.24351669310428,
+              32.952162912760464
+            ],
+            [
+              -117.24370330000002,
+              32.9535491
+            ],
+            [
+              -117.2437587,
+              32.956482
+            ],
+            [
+              -117.24361065642293,
+              32.957290402680506
+            ],
+            [
+              -117.24320871034143,
+              32.958285291432865
+            ],
+            [
+              -117.24307901550817,
+              32.958394137445815
+            ],
+            [
+              -117.2367254626309,
+              32.96372617412201
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 4,
+        "hoa_name": "Carmel Valley Neighborhood 10 North HOA",
+        "ccr_url": "HOA_govern_doc_samples/CC&R/CVN10 CCRs.pdf",
+        "source": null,
+        "status": "CC&R Cited",
+        "notes": null,
+        "hoa_fees": 52.0,
+        "fees_period": "Monthly",
+        "last_updated": null,
+        "editor": null,
+        "area_m2": null,
+        "area_acre": null,
+        "cc&r_pdf": null,
+        "hoa_services": null,
+        "amenities": [
+          "Common Area open space",
+          "Recreational facilities"
+        ],
+        "hoa_type": "master_association",
+        "master_relationship": null,
+        "parent_master": null,
+        "pets_allowed": "restricted",
+        "pets_restrictions": "Maximum of 4 household pets per unit at any one time; maximum of 2 of any one species. (Page 35)",
+        "rentals_allowed": "unknown",
+        "short_term_allowed": "unknown",
+        "min_lease_days": null,
+        "rentals_restrictions": "No explicit rental restriction found in extractable text. Board Rules and Regulations may impose additional limits.",
+        "parking_restrictions": "Commercial Vehicles (those with business advertising) and Recreational Vehicles (motorhomes, trailers, boats, campers) subject to restrictions. Specific details partially obscured by PDF text layer artifact — same restriction pattern as West Highlands Pacific HOA (sister Pardee Homes development).",
+        "architectural_control": "Architectural committee approval required before constructing or modifying any building, fence, wall, hedge, or improvement. Plans and specifications must be submitted showing location, design, and all items required under CC&Rs. Approval based on harmony of external design, location, and materials.",
+        "amendment_threshold": "75% of members (standard amendments require written consent of 75% of voting power)",
+        "board_size": null,
+        "recorded_date": null,
+        "document_type": "CC&Rs",
+        "county": "San Diego",
+        "state": "CA",
+        "documents": [
+          {
+            "type": "CC&R",
+            "url": null,
+            "pdf_path": "HOA_govern_doc_samples/CC&R/CVN10 CCRs.pdf"
+          }
+        ],
+        "fee_coverage": [
+          "Maintenance Grounds",
+          "Common Area Maintenance"
+        ],
+        "member_responsibility": [
+          "Architectural review for changes"
+        ],
+        "extraction_confidence": "medium",
+        "extraction_method": "llm (pdfplumber+dedup) — manual review from clean text"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -117.21280238835186,
+              32.920041240282224
+            ],
+            [
+              -117.21276235910175,
+              32.92188760315027
+            ],
+            [
+              -117.21276805675221,
+              32.92370745320717
+            ],
+            [
+              -117.21714140783673,
+              32.92377626214
+            ],
+            [
+              -117.21710569999998,
+              32.9259542
+            ],
+            [
+              -117.21707508611411,
+              32.92734477273716
+            ],
+            [
+              -117.21415886555518,
+              32.92736401735737
+            ],
+            [
+              -117.21097607441435,
+              32.9273450068396
+            ],
+            [
+              -117.21055122046603,
+              32.93099444119392
+            ],
+            [
+              -117.2105392806229,
+              32.933668200986816
+            ],
+            [
+              -117.2100534,
+              32.9352189
+            ],
+            [
+              -117.20843310937775,
+              32.935653873614086
+            ],
+            [
+              -117.20690019895267,
+              32.93587975782568
+            ],
+            [
+              -117.20573541416513,
+              32.93608369490873
+            ],
+            [
+              -117.20466752496863,
+              32.93610485367981
+            ],
+            [
+              -117.20344021715817,
+              32.935662402522674
+            ],
+            [
+              -117.20178924639578,
+              32.93445038009095
+            ],
+            [
+              -117.19757676531354,
+              32.93290498216722
+            ],
+            [
+              -117.19591882829056,
+              32.931950082473286
+            ],
+            [
+              -117.19629920572004,
+              32.931053741172896
+            ],
+            [
+              -117.19625372793526,
+              32.9309333027132
+            ],
+            [
+              -117.19582201730772,
+              32.93073920706951
+            ],
+            [
+              -117.19575107615437,
+              32.930650260833026
+            ],
+            [
+              -117.19409467803665,
+              32.93039665283982
+            ],
+            [
+              -117.1916797199693,
+              32.929881852923366
+            ],
+            [
+              -117.19134108928226,
+              32.92972427027165
+            ],
+            [
+              -117.19117944640804,
+              32.929602565404906
+            ],
+            [
+              -117.19105095530477,
+              32.929444461745774
+            ],
+            [
+              -117.19085378438227,
+              32.92927693703587
+            ],
+            [
+              -117.19085014509389,
+              32.928875285919965
+            ],
+            [
+              -117.1909356062398,
+              32.92738661835356
+            ],
+            [
+              -117.2042325176618,
+              32.92000641902133
+            ],
+            [
+              -117.2042325176618,
+              32.92000641902133
+            ],
+            [
+              -117.21280238835186,
+              32.920041240282224
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 5,
+        "hoa_name": "Pacific Highlands Ranch North HOA",
+        "ccr_url": "HOA_govern_doc_samples/CC&R/NEWPHR Maintenance Association - CC&Rs with Articles and Bylaws.pdf",
+        "source": "Other",
+        "status": "CC&R Cited",
+        "notes": null,
+        "hoa_fees": 280.0,
+        "fees_period": "Monthly",
+        "last_updated": null,
+        "editor": null,
+        "area_m2": null,
+        "area_acre": null,
+        "cc&r_pdf": null,
+        "hoa_services": null,
+        "amenities": [
+          "Urban Amenity Area",
+          "Trails",
+          "Parkways and landscape areas",
+          "Detention basins and drainage facilities",
+          "Maintenance Responsibility Areas"
+        ],
+        "hoa_type": "master_association",
+        "master_relationship": null,
+        "parent_master": null,
+        "pets_allowed": "unknown",
+        "pets_restrictions": "Not found in pages reviewed via OCR. Document is 111 pages; pet policy likely in Use Restrictions article not yet sampled.",
+        "rentals_allowed": "unknown",
+        "short_term_allowed": "unknown",
+        "min_lease_days": null,
+        "rentals_restrictions": "Declaration explicitly does not limit Declarant's right to market, sell, lease, or dispose of parcels. Owner rental rights not explicitly restricted in pages reviewed.",
+        "parking_restrictions": "Not found in pages reviewed via OCR.",
+        "architectural_control": "Architectural committee referenced. Specific review process not captured in pages reviewed via OCR.",
+        "amendment_threshold": "67% of Voting Power of the Maintenance Association (Article 14, Section 14.1). Certain articles (e.g. Article 4) require Declarant's prior written consent to amend.",
+        "board_size": "5 directors representing different Areas. Upon expiration of Class C (Declarant) membership, representatives shift to Class A/B members.",
+        "recorded_date": "2009-08-28",
+        "document_type": "CC&Rs with Articles and Bylaws",
+        "county": "San Diego",
+        "state": "CA",
+        "documents": [
+          {
+            "type": "CC&R",
+            "url": null,
+            "pdf_path": "HOA_govern_doc_samples/CC&R/NEWPHR Maintenance Association - CC&Rs with Articles and Bylaws.pdf"
+          }
+        ],
+        "fee_coverage": [
+          "Landscaping",
+          "Maintenance Grounds"
+        ],
+        "member_responsibility": [
+          "Architectural review for changes"
+        ],
+        "extraction_confidence": "low",
+        "extraction_method": "ocr (partial — sampled pages only)"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -117.17862216249277,
+              32.971182059528594
+            ],
+            [
+              -117.18178286179341,
+              32.9711315357496
+            ],
+            [
+              -117.18229556086584,
+              32.97093708878841
+            ],
+            [
+              -117.18273841257896,
+              32.9707636240778
+            ],
+            [
+              -117.18324005675896,
+              32.97043707691316
+            ],
+            [
+              -117.18531800926493,
+              32.969724739100236
+            ],
+            [
+              -117.18593950485439,
+              32.96937135506152
+            ],
+            [
+              -117.18767847181454,
+              32.96836945095613
+            ],
+            [
+              -117.1894323026449,
+              32.967672462910706
+            ],
+            [
+              -117.19107844210848,
+              32.96751757593156
+            ],
+            [
+              -117.19290919534366,
+              32.96725943036282
+            ],
+            [
+              -117.1937049659797,
+              32.967062236656766
+            ],
+            [
+              -117.19405770000002,
+              32.9667229
+            ],
+            [
+              -117.19765691908174,
+              32.96547605632299
+            ],
+            [
+              -117.19864132681121,
+              32.96535272495235
+            ],
+            [
+              -117.19931480234156,
+              32.96555819458864
+            ],
+            [
+              -117.19962589986184,
+              32.96581256837249
+            ],
+            [
+              -117.20275039592059,
+              32.96678176747461
+            ],
+            [
+              -117.20803121833693,
+              32.96814675637814
+            ],
+            [
+              -117.20870429203464,
+              32.96868431466015
+            ],
+            [
+              -117.20872641215496,
+              32.97048623096707
+            ],
+            [
+              -117.20441336145798,
+              32.97039764752724
+            ],
+            [
+              -117.20447557662087,
+              32.9740002771859
+            ],
+            [
+              -117.20271436929576,
+              32.97399840320067
+            ],
+            [
+              -117.2001848858613,
+              32.97399571174314
+            ],
+            [
+              -117.1786482370035,
+              32.973893389815906
+            ],
+            [
+              -117.1786482370035,
+              32.973893389815906
+            ],
+            [
+              -117.17862216249277,
+              32.971182059528594
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 6,
+        "hoa_name": "Meadows Del Mar HOA",
+        "ccr_url": "https://www.meadowsdelmarhoa.com/_files/ugd/e7ebc6_8b96fd92ff4a4db2af33c21e499caecd.pdf",
+        "source": "CC&R",
+        "status": "CC&R Cited",
+        "notes": null,
+        "hoa_fees": 170.0,
+        "fees_period": "Monthly",
+        "last_updated": "2025-11-10T19:31:22.742Z",
+        "editor": null,
+        "area_m2": null,
+        "area_acre": null,
+        "cc&r_pdf": null,
+        "hoa_services": null,
+        "amenities": null,
+        "hoa_type": null,
+        "master_relationship": null,
+        "parent_master": null,
+        "pets_allowed": null,
+        "pets_restrictions": null,
+        "rentals_allowed": null,
+        "short_term_allowed": null,
+        "min_lease_days": null,
+        "rentals_restrictions": null,
+        "parking_restrictions": null,
+        "architectural_control": null,
+        "amendment_threshold": null,
+        "board_size": null,
+        "recorded_date": null,
+        "document_type": null,
+        "county": null,
+        "state": null,
+        "documents": [
+          {
+            "type": "CC&R",
+            "url": "https://www.meadowsdelmarhoa.com/_files/ugd/e7ebc6_8b96fd92ff4a4db2af33c21e499caecd.pdf",
+            "pdf_path": null
+          },
+          {
+            "type": "Rules & Regulations",
+            "url": null,
+            "pdf_path": "HOA_govern_doc_samples/CC&R/MDM Rules & Regulations effective March 23, 2024.pdf"
+          }
+        ],
+        "fee_coverage": null,
+        "member_responsibility": null,
+        "extraction_confidence": null,
+        "extraction_method": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -117.19980845976876,
+              32.94156278537355
+            ],
+            [
+              -117.19983649925238,
+              32.94330469918531
+            ],
+            [
+              -117.19965023573025,
+              32.94344058912716
+            ],
+            [
+              -117.19937145513804,
+              32.943548519952174
+            ],
+            [
+              -117.1984257311939,
+              32.943608998632264
+            ],
+            [
+              -117.19768319142503,
+              32.94374678679211
+            ],
+            [
+              -117.197130302327,
+              32.943678249866956
+            ],
+            [
+              -117.19662359321339,
+              32.943481427008
+            ],
+            [
+              -117.19596261413126,
+              32.94344846436781
+            ],
+            [
+              -117.19556171764992,
+              32.94335176237422
+            ],
+            [
+              -117.19557521772316,
+              32.94283948348302
+            ],
+            [
+              -117.19554764433714,
+              32.94252694555357
+            ],
+            [
+              -117.19553077926017,
+              32.941442373773
+            ],
+            [
+              -117.18701953842978,
+              32.94122636218994
+            ],
+            [
+              -117.18701896184307,
+              32.941226345818514
+            ],
+            [
+              -117.18683235443916,
+              32.93562257542146
+            ],
+            [
+              -117.18727767626135,
+              32.93562945292538
+            ],
+            [
+              -117.1876404999836,
+              32.93607014158433
+            ],
+            [
+              -117.18778451332571,
+              32.936475255808375
+            ],
+            [
+              -117.18785420499148,
+              32.93696314522675
+            ],
+            [
+              -117.18789331195087,
+              32.937523471641704
+            ],
+            [
+              -117.18784437768261,
+              32.93778536738009
+            ],
+            [
+              -117.1888574095142,
+              32.93790861714463
+            ],
+            [
+              -117.18932135748412,
+              32.9376957297074
+            ],
+            [
+              -117.18911143170585,
+              32.93723908643436
+            ],
+            [
+              -117.18951629511191,
+              32.937007540815664
+            ],
+            [
+              -117.18972016814332,
+              32.936929653110056
+            ],
+            [
+              -117.18995025031242,
+              32.9369071473616
+            ],
+            [
+              -117.19315898799044,
+              32.93783234141186
+            ],
+            [
+              -117.19327689889222,
+              32.937895251096904
+            ],
+            [
+              -117.19326948869644,
+              32.93801692723686
+            ],
+            [
+              -117.19258089461793,
+              32.93862702122058
+            ],
+            [
+              -117.19230202086918,
+              32.938760656341856
+            ],
+            [
+              -117.1922015662949,
+              32.93875635303792
+            ],
+            [
+              -117.19128384109231,
+              32.93850303874304
+            ],
+            [
+              -117.19051431104968,
+              32.938374018352114
+            ],
+            [
+              -117.18913998196254,
+              32.93842688600415
+            ],
+            [
+              -117.18778159230077,
+              32.93854300084865
+            ],
+            [
+              -117.18766002333275,
+              32.938655732175405
+            ],
+            [
+              -117.18728683854937,
+              32.93866854969986
+            ],
+            [
+              -117.18720201404159,
+              32.9392133641326
+            ],
+            [
+              -117.18728985095079,
+              32.93960622253221
+            ],
+            [
+              -117.18749571205936,
+              32.93984165759592
+            ],
+            [
+              -117.18815007288028,
+              32.93955155419811
+            ],
+            [
+              -117.18844536313311,
+              32.93950661546938
+            ],
+            [
+              -117.1896434329849,
+              32.93941377364644
+            ],
+            [
+              -117.19015978793806,
+              32.93931050360387
+            ],
+            [
+              -117.19089105129272,
+              32.93933429748806
+            ],
+            [
+              -117.19116799576727,
+              32.939345663057935
+            ],
+            [
+              -117.19148276855726,
+              32.93939315773658
+            ],
+            [
+              -117.19171958658816,
+              32.93962280717075
+            ],
+            [
+              -117.19169825212673,
+              32.939718463082954
+            ],
+            [
+              -117.1913765537231,
+              32.93994777223816
+            ],
+            [
+              -117.19118346417868,
+              32.9401138754125
+            ],
+            [
+              -117.1909485634866,
+              32.940244889554705
+            ],
+            [
+              -117.19068264886266,
+              32.940311166926115
+            ],
+            [
+              -117.19038500757782,
+              32.9403581108883
+            ],
+            [
+              -117.19012299122575,
+              32.94050740953201
+            ],
+            [
+              -117.18982956010191,
+              32.9406656995486
+            ],
+            [
+              -117.18982564488363,
+              32.94072662294915
+            ],
+            [
+              -117.18989509377434,
+              32.94072978778792
+            ],
+            [
+              -117.19019243182883,
+              32.940720155040715
+            ],
+            [
+              -117.19023381759757,
+              32.94067613032597
+            ],
+            [
+              -117.19041610065874,
+              32.940641523316835
+            ],
+            [
+              -117.19082282597138,
+              32.94064172659876
+            ],
+            [
+              -117.19138616235223,
+              32.940493395672554
+            ],
+            [
+              -117.19158612409703,
+              32.94049965000697
+            ],
+            [
+              -117.1926334248364,
+              32.940523464195266
+            ],
+            [
+              -117.19294501250913,
+              32.94028574193941
+            ],
+            [
+              -117.19319629579456,
+              32.93998205541501
+            ],
+            [
+              -117.1934729983449,
+              32.9397394116742
+            ],
+            [
+              -117.1936800675757,
+              32.93977762470283
+            ],
+            [
+              -117.19412450256523,
+              32.94055366325541
+            ],
+            [
+              -117.19439592457591,
+              32.94121264729744
+            ],
+            [
+              -117.19516593455737,
+              32.941210733417094
+            ],
+            [
+              -117.195578808627,
+              32.941336246753735
+            ],
+            [
+              -117.19577801701084,
+              32.94154865613667
+            ],
+            [
+              -117.19584606344446,
+              32.94178125925478
+            ],
+            [
+              -117.19570973083525,
+              32.94257416216781
+            ],
+            [
+              -117.19574684746226,
+              32.94294444611811
+            ],
+            [
+              -117.19606033643755,
+              32.943229509962606
+            ],
+            [
+              -117.19665434954615,
+              32.94330165944685
+            ],
+            [
+              -117.19717101749639,
+              32.943478140173895
+            ],
+            [
+              -117.19748427709239,
+              32.94354866446068
+            ],
+            [
+              -117.1977196766336,
+              32.943539517035404
+            ],
+            [
+              -117.19822722194735,
+              32.94343230425836
+            ],
+            [
+              -117.1990116283817,
+              32.94340672401995
+            ],
+            [
+              -117.19938590911003,
+              32.94328766599178
+            ],
+            [
+              -117.19955763236105,
+              32.94308529629429
+            ],
+            [
+              -117.19956561847413,
+              32.942521171424346
+            ],
+            [
+              -117.19961342503842,
+              32.941714956644354
+            ],
+            [
+              -117.19974260840175,
+              32.941268324272535
+            ],
+            [
+              -117.1998446005386,
+              32.94098736811283
+            ],
+            [
+              -117.1997692636826,
+              32.94044675035723
+            ],
+            [
+              -117.2001630551245,
+              32.93983126626579
+            ],
+            [
+              -117.20114085419148,
+              32.93845371554639
+            ],
+            [
+              -117.20151691643441,
+              32.938154526874136
+            ],
+            [
+              -117.20187820475896,
+              32.937993409709414
+            ],
+            [
+              -117.20228204313655,
+              32.93794329016166
+            ],
+            [
+              -117.20273266352248,
+              32.93797199624445
+            ],
+            [
+              -117.20404886044987,
+              32.93785030376384
+            ],
+            [
+              -117.20406852317943,
+              32.939934270388775
+            ],
+            [
+              -117.20407947861939,
+              32.94167374862123
+            ],
+            [
+              -117.20407954397892,
+              32.94168412614581
+            ],
+            [
+              -117.19980845976876,
+              32.94156278537355
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 7,
+        "hoa_name": "Palacio Del Mar",
+        "ccr_url": null,
+        "source": "Other Online",
+        "status": "Uncited",
+        "notes": null,
+        "hoa_fees": null,
+        "fees_period": null,
+        "last_updated": null,
+        "editor": null,
+        "area_m2": null,
+        "area_acre": null,
+        "cc&r_pdf": null,
+        "hoa_services": null,
+        "amenities": null,
+        "hoa_type": null,
+        "master_relationship": null,
+        "parent_master": null,
+        "pets_allowed": null,
+        "pets_restrictions": null,
+        "rentals_allowed": null,
+        "short_term_allowed": null,
+        "min_lease_days": null,
+        "rentals_restrictions": null,
+        "parking_restrictions": null,
+        "architectural_control": null,
+        "amendment_threshold": null,
+        "board_size": null,
+        "recorded_date": null,
+        "document_type": null,
+        "county": null,
+        "state": null,
+        "documents": null,
+        "fee_coverage": null,
+        "member_responsibility": null,
+        "extraction_confidence": null,
+        "extraction_method": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -117.2134946,
+              32.9433267
+            ],
+            [
+              -117.2122380529067,
+              32.94448620852782
+            ],
+            [
+              -117.21065729748724,
+              32.94525115967425
+            ],
+            [
+              -117.20716117418723,
+              32.94644214638632
+            ],
+            [
+              -117.2045765813846,
+              32.94791391267938
+            ],
+            [
+              -117.20294967252225,
+              32.94854327894394
+            ],
+            [
+              -117.2027016,
+              32.9485029
+            ],
+            [
+              -117.19778661001274,
+              32.948544195516725
+            ],
+            [
+              -117.19775266371293,
+              32.94651022439417
+            ],
+            [
+              -117.19806437101116,
+              32.94633565242672
+            ],
+            [
+              -117.20007536900384,
+              32.94554263562216
+            ],
+            [
+              -117.20364491031084,
+              32.94402864858585
+            ],
+            [
+              -117.20562981756342,
+              32.943201759663204
+            ],
+            [
+              -117.20955214603359,
+              32.94299291766831
+            ],
+            [
+              -117.21041090538596,
+              32.942297971832424
+            ],
+            [
+              -117.21061636441048,
+              32.94208592481899
+            ],
+            [
+              -117.21121511236608,
+              32.94154259886388
+            ],
+            [
+              -117.21172119712818,
+              32.941321556386946
+            ],
+            [
+              -117.2124642785079,
+              32.94131306318691
+            ],
+            [
+              -117.212625132829,
+              32.94128576080633
+            ],
+            [
+              -117.21278945046478,
+              32.94126095973929
+            ],
+            [
+              -117.2128098,
+              32.9417195
+            ],
+            [
+              -117.2128505,
+              32.9420196
+            ],
+            [
+              -117.21309770639083,
+              32.94267728472469
+            ],
+            [
+              -117.21335909999998,
+              32.9431323
+            ],
+            [
+              -117.21335909999998,
+              32.9431323
+            ],
+            [
+              -117.2134946,
+              32.9433267
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 8,
+        "hoa_name": "Del Mar Mesa Estates",
+        "ccr_url": null,
+        "source": "Other Online",
+        "status": "Uncited",
+        "notes": null,
+        "hoa_fees": null,
+        "fees_period": null,
+        "last_updated": null,
+        "editor": null,
+        "area_m2": null,
+        "area_acre": null,
+        "cc&r_pdf": null,
+        "hoa_services": null,
+        "amenities": null,
+        "hoa_type": null,
+        "master_relationship": null,
+        "parent_master": null,
+        "pets_allowed": null,
+        "pets_restrictions": null,
+        "rentals_allowed": null,
+        "short_term_allowed": null,
+        "min_lease_days": null,
+        "rentals_restrictions": null,
+        "parking_restrictions": null,
+        "architectural_control": null,
+        "amendment_threshold": null,
+        "board_size": null,
+        "recorded_date": null,
+        "document_type": null,
+        "county": null,
+        "state": null,
+        "documents": null,
+        "fee_coverage": null,
+        "member_responsibility": null,
+        "extraction_confidence": null,
+        "extraction_method": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -117.20410750924322,
+              32.943068011761
+            ],
+            [
+              -117.20407947861939,
+              32.94167374862123
+            ],
+            [
+              -117.20844866793591,
+              32.94172100429704
+            ],
+            [
+              -117.20839918234513,
+              32.93814934023339
+            ],
+            [
+              -117.210719780168,
+              32.93819265251537
+            ],
+            [
+              -117.21075729999997,
+              32.9386002
+            ],
+            [
+              -117.21083639593749,
+              32.93873846044382
+            ],
+            [
+              -117.21113053324198,
+              32.93858312927745
+            ],
+            [
+              -117.21175433291016,
+              32.9392892683135
+            ],
+            [
+              -117.2121082164894,
+              32.9400592863891
+            ],
+            [
+              -117.21220694076737,
+              32.94060438445014
+            ],
+            [
+              -117.21220982792474,
+              32.940968603681576
+            ],
+            [
+              -117.21172119712818,
+              32.941321556386946
+            ],
+            [
+              -117.21121511236608,
+              32.94154259886388
+            ],
+            [
+              -117.21041090538596,
+              32.942297971832424
+            ],
+            [
+              -117.20955214603359,
+              32.94299291766831
+            ],
+            [
+              -117.20934214727714,
+              32.94254658570411
+            ],
+            [
+              -117.2049203742134,
+              32.9427605211616
+            ],
+            [
+              -117.2049203742134,
+              32.9427605211616
+            ],
+            [
+              -117.20410750924322,
+              32.943068011761
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 9,
+        "hoa_name": "Alta Del Mar",
+        "ccr_url": null,
+        "source": "Other Online",
+        "status": "Uncited",
+        "notes": null,
+        "hoa_fees": null,
+        "fees_period": null,
+        "last_updated": null,
+        "editor": null,
+        "area_m2": null,
+        "area_acre": null,
+        "cc&r_pdf": null,
+        "hoa_services": null,
+        "amenities": null,
+        "hoa_type": null,
+        "master_relationship": null,
+        "parent_master": null,
+        "pets_allowed": null,
+        "pets_restrictions": null,
+        "rentals_allowed": null,
+        "short_term_allowed": null,
+        "min_lease_days": null,
+        "rentals_restrictions": null,
+        "parking_restrictions": null,
+        "architectural_control": null,
+        "amendment_threshold": null,
+        "board_size": null,
+        "recorded_date": null,
+        "document_type": null,
+        "county": null,
+        "state": null,
+        "documents": null,
+        "fee_coverage": null,
+        "member_responsibility": null,
+        "extraction_confidence": null,
+        "extraction_method": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -117.18701953842978,
+              32.94122636218994
+            ],
+            [
+              -117.1848340023185,
+              32.94116559484524
+            ],
+            [
+              -117.18483545382533,
+              32.94125364332273
+            ],
+            [
+              -117.182672,
+              32.9412872
+            ],
+            [
+              -117.18263185772581,
+              32.939407136204245
+            ],
+            [
+              -117.18265089999998,
+              32.9391777
+            ],
+            [
+              -117.18130642531516,
+              32.938954022015764
+            ],
+            [
+              -117.18037539947268,
+              32.93852423586034
+            ],
+            [
+              -117.17997815194232,
+              32.938353787600946
+            ],
+            [
+              -117.17996134539408,
+              32.934819721238625
+            ],
+            [
+              -117.17997929035437,
+              32.93437990498688
+            ],
+            [
+              -117.18002044706094,
+              32.93433100970802
+            ],
+            [
+              -117.18058142819767,
+              32.933781672198336
+            ],
+            [
+              -117.18081296742476,
+              32.933656551693836
+            ],
+            [
+              -117.18870156297324,
+              32.92942804999433
+            ],
+            [
+              -117.18872716204463,
+              32.929599226131536
+            ],
+            [
+              -117.18924538660872,
+              32.929604229037224
+            ],
+            [
+              -117.18963267262636,
+              32.9296758697568
+            ],
+            [
+              -117.18975012363396,
+              32.92982789086534
+            ],
+            [
+              -117.18998230076006,
+              32.930850183916576
+            ],
+            [
+              -117.19006172779997,
+              32.93110362222594
+            ],
+            [
+              -117.19001028153512,
+              32.93125001420792
+            ],
+            [
+              -117.19007472597487,
+              32.93196528936959
+            ],
+            [
+              -117.19006629986414,
+              32.932011200644595
+            ],
+            [
+              -117.18995201245879,
+              32.932142989582424
+            ],
+            [
+              -117.18836782734573,
+              32.93371377930186
+            ],
+            [
+              -117.18830117691974,
+              32.933820638156675
+            ],
+            [
+              -117.18683235443916,
+              32.93562257542146
+            ],
+            [
+              -117.18701953842978,
+              32.94122636218994
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 10,
+        "hoa_name": "Maricel",
+        "ccr_url": null,
+        "source": "Other Online",
+        "status": "Uncited",
+        "notes": null,
+        "hoa_fees": null,
+        "fees_period": null,
+        "last_updated": null,
+        "editor": null,
+        "area_m2": null,
+        "area_acre": null,
+        "cc&r_pdf": null,
+        "hoa_services": null,
+        "amenities": null,
+        "hoa_type": null,
+        "master_relationship": null,
+        "parent_master": null,
+        "pets_allowed": null,
+        "pets_restrictions": null,
+        "rentals_allowed": null,
+        "short_term_allowed": null,
+        "min_lease_days": null,
+        "rentals_restrictions": null,
+        "parking_restrictions": null,
+        "architectural_control": null,
+        "amendment_threshold": null,
+        "board_size": null,
+        "recorded_date": null,
+        "document_type": null,
+        "county": null,
+        "state": null,
+        "documents": null,
+        "fee_coverage": null,
+        "member_responsibility": null,
+        "extraction_confidence": null,
+        "extraction_method": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -117.1581156091014,
+              32.97054964957414
+            ],
+            [
+              -117.1581260547903,
+              32.96920901522917
+            ],
+            [
+              -117.15783008646657,
+              32.96920953732745
+            ],
+            [
+              -117.15773000649199,
+              32.969089708546235
+            ],
+            [
+              -117.15758260955887,
+              32.969177393733375
+            ],
+            [
+              -117.15713141101358,
+              32.96932695942189
+            ],
+            [
+              -117.15700252982066,
+              32.96932728220401
+            ],
+            [
+              -117.15673392868456,
+              32.96936708625602
+            ],
+            [
+              -117.1546318254517,
+              32.970344825561455
+            ],
+            [
+              -117.15462221015113,
+              32.97070218315
+            ],
+            [
+              -117.15462221015113,
+              32.97070218315
+            ],
+            [
+              -117.1581156091014,
+              32.97054964957414
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 11,
+        "hoa_name": "Fairbanks Highlands Estates",
+        "ccr_url": null,
+        "source": "Other Online",
+        "status": "Uncited",
+        "notes": null,
+        "hoa_fees": null,
+        "fees_period": null,
+        "last_updated": null,
+        "editor": null,
+        "area_m2": null,
+        "area_acre": null,
+        "cc&r_pdf": null,
+        "hoa_services": null,
+        "amenities": null,
+        "hoa_type": null,
+        "master_relationship": null,
+        "parent_master": null,
+        "pets_allowed": null,
+        "pets_restrictions": null,
+        "rentals_allowed": null,
+        "short_term_allowed": null,
+        "min_lease_days": null,
+        "rentals_restrictions": null,
+        "parking_restrictions": null,
+        "architectural_control": null,
+        "amendment_threshold": null,
+        "board_size": null,
+        "recorded_date": null,
+        "document_type": null,
+        "county": null,
+        "state": null,
+        "documents": null,
+        "fee_coverage": null,
+        "member_responsibility": null,
+        "extraction_confidence": null,
+        "extraction_method": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -117.16552006710211,
+              32.97749013225007
+            ],
+            [
+              -117.16556552381125,
+              32.97040390566296
+            ],
+            [
+              -117.16310057037221,
+              32.97051502796486
+            ],
+            [
+              -117.16222417683299,
+              32.97069259358011
+            ],
+            [
+              -117.16192689297627,
+              32.970728383160846
+            ],
+            [
+              -117.15854418763253,
+              32.97089315403855
+            ],
+            [
+              -117.15493949248825,
+              32.97105754916594
+            ],
+            [
+              -117.1539857529324,
+              32.97117777586011
+            ],
+            [
+              -117.15347323010045,
+              32.9736425703865
+            ],
+            [
+              -117.15421873717149,
+              32.974290100947904
+            ],
+            [
+              -117.15430961061033,
+              32.97459293730746
+            ],
+            [
+              -117.15409089067529,
+              32.974727494475815
+            ],
+            [
+              -117.15400406194196,
+              32.97468690422876
+            ],
+            [
+              -117.15357771766179,
+              32.974925356248164
+            ],
+            [
+              -117.15341390124165,
+              32.97532577201133
+            ],
+            [
+              -117.15342646973293,
+              32.97575547670574
+            ],
+            [
+              -117.1538811818614,
+              32.97574129589291
+            ],
+            [
+              -117.15387246669336,
+              32.97584223245549
+            ],
+            [
+              -117.15389534167744,
+              32.97600555619438
+            ],
+            [
+              -117.15425168810258,
+              32.977089873706184
+            ],
+            [
+              -117.15411937269243,
+              32.97717069894424
+            ],
+            [
+              -117.15390097681902,
+              32.97749597165236
+            ],
+            [
+              -117.15383085115222,
+              32.97794408242767
+            ],
+            [
+              -117.16120970269708,
+              32.97752736400932
+            ],
+            [
+              -117.16552006710211,
+              32.97749013225007
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 12,
+        "hoa_name": "Stallion Crossing HOA",
+        "ccr_url": null,
+        "source": "Other Online",
+        "status": "Uncited",
+        "notes": null,
+        "hoa_fees": null,
+        "fees_period": null,
+        "last_updated": null,
+        "editor": null,
+        "area_m2": null,
+        "area_acre": null,
+        "cc&r_pdf": null,
+        "hoa_services": null,
+        "amenities": null,
+        "hoa_type": null,
+        "master_relationship": null,
+        "parent_master": null,
+        "pets_allowed": null,
+        "pets_restrictions": null,
+        "rentals_allowed": null,
+        "short_term_allowed": null,
+        "min_lease_days": null,
+        "rentals_restrictions": null,
+        "parking_restrictions": null,
+        "architectural_control": null,
+        "amendment_threshold": null,
+        "board_size": null,
+        "recorded_date": null,
+        "document_type": null,
+        "county": null,
+        "state": null,
+        "documents": null,
+        "fee_coverage": null,
+        "member_responsibility": null,
+        "extraction_confidence": null,
+        "extraction_method": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -117.23874567636489,
+              32.9696555082349
+            ],
+            [
+              -117.23874455304102,
+              32.97015890273125
+            ],
+            [
+              -117.23733335654909,
+              32.970144623669924
+            ],
+            [
+              -117.23717380637946,
+              32.97000852270565
+            ],
+            [
+              -117.23688582553967,
+              32.96961347002695
+            ],
+            [
+              -117.23628032124672,
+              32.968906636142236
+            ],
+            [
+              -117.23617809646987,
+              32.96873124870953
+            ],
+            [
+              -117.23583621457672,
+              32.96847155653172
+            ],
+            [
+              -117.23547308790155,
+              32.96816524121758
+            ],
+            [
+              -117.23535356195687,
+              32.96803465517329
+            ],
+            [
+              -117.23517883039649,
+              32.9677590863844
+            ],
+            [
+              -117.2351174144169,
+              32.96730116178621
+            ],
+            [
+              -117.23631279060643,
+              32.967313311030665
+            ],
+            [
+              -117.23819370615035,
+              32.969124118777884
+            ],
+            [
+              -117.23838839942012,
+              32.96930756082203
+            ],
+            [
+              -117.23840037573892,
+              32.96931653847452
+            ],
+            [
+              -117.23874567636489,
+              32.9696555082349
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 13,
+        "hoa_name": "Senterra HOA",
+        "ccr_url": null,
+        "source": "Other Online",
+        "status": "Uncited",
+        "notes": null,
+        "hoa_fees": null,
+        "fees_period": null,
+        "last_updated": null,
+        "editor": null,
+        "area_m2": null,
+        "area_acre": null,
+        "cc&r_pdf": null,
+        "hoa_services": null,
+        "amenities": null,
+        "hoa_type": null,
+        "master_relationship": null,
+        "parent_master": null,
+        "pets_allowed": null,
+        "pets_restrictions": null,
+        "rentals_allowed": null,
+        "short_term_allowed": null,
+        "min_lease_days": null,
+        "rentals_restrictions": null,
+        "parking_restrictions": null,
+        "architectural_control": null,
+        "amendment_threshold": null,
+        "board_size": null,
+        "recorded_date": null,
+        "document_type": null,
+        "county": null,
+        "state": null,
+        "documents": null,
+        "fee_coverage": null,
+        "member_responsibility": null,
+        "extraction_confidence": null,
+        "extraction_method": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -117.20589348498828,
+              32.97760834106969
+            ],
+            [
+              -117.20519214494962,
+              32.977769696054025
+            ],
+            [
+              -117.20525189717627,
+              32.978167763335485
+            ],
+            [
+              -117.20452373501739,
+              32.97810744089531
+            ],
+            [
+              -117.20450608637266,
+              32.97874784725454
+            ],
+            [
+              -117.20442920689314,
+              32.9787408251239
+            ],
+            [
+              -117.20323260094344,
+              32.97760603849946
+            ],
+            [
+              -117.20186566235546,
+              32.97565422043463
+            ],
+            [
+              -117.20234687254585,
+              32.97494695059713
+            ],
+            [
+              -117.20250249279003,
+              32.97426688736286
+            ],
+            [
+              -117.20271436929576,
+              32.97399840320067
+            ],
+            [
+              -117.20447557662087,
+              32.9740002771859
+            ],
+            [
+              -117.20443167581855,
+              32.97145296286178
+            ],
+            [
+              -117.20510883450588,
+              32.97126931295855
+            ],
+            [
+              -117.20513370970261,
+              32.970412531376134
+            ],
+            [
+              -117.2070543817539,
+              32.970451908255285
+            ],
+            [
+              -117.20786144687702,
+              32.97095926917672
+            ],
+            [
+              -117.20817367044172,
+              32.97152616446925
+            ],
+            [
+              -117.20825414579039,
+              32.97167228412803
+            ],
+            [
+              -117.20874177187487,
+              32.97188254960211
+            ],
+            [
+              -117.20875308366321,
+              32.97288947698989
+            ],
+            [
+              -117.20706359999998,
+              32.9728565
+            ],
+            [
+              -117.206917,
+              32.97287149999999
+            ],
+            [
+              -117.2068248,
+              32.972887599999986
+            ],
+            [
+              -117.206497,
+              32.97298
+            ],
+            [
+              -117.206223,
+              32.973122
+            ],
+            [
+              -117.205856,
+              32.973476
+            ],
+            [
+              -117.205727,
+              32.973724
+            ],
+            [
+              -117.2056983,
+              32.9740045
+            ],
+            [
+              -117.2057149061463,
+              32.97431111696835
+            ],
+            [
+              -117.2058459,
+              32.974859
+            ],
+            [
+              -117.2058813,
+              32.975419
+            ],
+            [
+              -117.2058235327206,
+              32.97583822713619
+            ],
+            [
+              -117.20579331029539,
+              32.97597068153007
+            ],
+            [
+              -117.2056195304757,
+              32.97651456185392
+            ],
+            [
+              -117.2055917341047,
+              32.976732950828385
+            ],
+            [
+              -117.2056142,
+              32.9770285
+            ],
+            [
+              -117.205688,
+              32.97728
+            ],
+            [
+              -117.205688,
+              32.97728
+            ],
+            [
+              -117.20589348498828,
+              32.97760834106969
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 14,
+        "hoa_name": "Stratford HOA",
+        "ccr_url": null,
+        "source": "Other Online",
+        "status": "Uncited",
+        "notes": null,
+        "hoa_fees": null,
+        "fees_period": null,
+        "last_updated": null,
+        "editor": null,
+        "area_m2": null,
+        "area_acre": null,
+        "cc&r_pdf": null,
+        "hoa_services": null,
+        "amenities": null,
+        "hoa_type": null,
+        "master_relationship": null,
+        "parent_master": null,
+        "pets_allowed": null,
+        "pets_restrictions": null,
+        "rentals_allowed": null,
+        "short_term_allowed": null,
+        "min_lease_days": null,
+        "rentals_restrictions": null,
+        "parking_restrictions": null,
+        "architectural_control": null,
+        "amendment_threshold": null,
+        "board_size": null,
+        "recorded_date": null,
+        "document_type": null,
+        "county": null,
+        "state": null,
+        "documents": null,
+        "fee_coverage": null,
+        "member_responsibility": null,
+        "extraction_confidence": null,
+        "extraction_method": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -117.20847750952053,
+              32.97799988855786
+            ],
+            [
+              -117.20851283616656,
+              32.97806044633756
+            ],
+            [
+              -117.20680800775705,
+              32.97899959528794
+            ],
+            [
+              -117.20647251211284,
+              32.97864473887815
+            ],
+            [
+              -117.2062573572975,
+              32.97820116636047
+            ],
+            [
+              -117.20589384678829,
+              32.97760823847192
+            ],
+            [
+              -117.205688,
+              32.97728
+            ],
+            [
+              -117.20561782637948,
+              32.977017423307025
+            ],
+            [
+              -117.2055917341047,
+              32.976732950828385
+            ],
+            [
+              -117.2056195304757,
+              32.97651456185392
+            ],
+            [
+              -117.20579331029539,
+              32.97597068153007
+            ],
+            [
+              -117.2058235327206,
+              32.97583822713619
+            ],
+            [
+              -117.20587614073645,
+              32.975422386167025
+            ],
+            [
+              -117.2058459,
+              32.974859
+            ],
+            [
+              -117.2057171046704,
+              32.974315877188936
+            ],
+            [
+              -117.205727,
+              32.973724
+            ],
+            [
+              -117.205856,
+              32.973476
+            ],
+            [
+              -117.206223,
+              32.973122
+            ],
+            [
+              -117.2065017509088,
+              32.972986782176726
+            ],
+            [
+              -117.2068248,
+              32.972887599999986
+            ],
+            [
+              -117.20706359999998,
+              32.9728565
+            ],
+            [
+              -117.20875308366321,
+              32.97288947698989
+            ],
+            [
+              -117.20876677115182,
+              32.9741078637793
+            ],
+            [
+              -117.20984299371993,
+              32.97412907586234
+            ],
+            [
+              -117.2099739740558,
+              32.974607787486576
+            ],
+            [
+              -117.20805577798576,
+              32.97723907966704
+            ],
+            [
+              -117.20847750952053,
+              32.97799988855786
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 15,
+        "hoa_name": "West Highlands Pacific HOA",
+        "ccr_url": "HOA_govern_doc_samples/CC&R/CCRS.pdf",
+        "source": "Other Online",
+        "status": "CC&R Cited",
+        "notes": null,
+        "hoa_fees": 1200.0,
+        "fees_period": "Annual",
+        "last_updated": null,
+        "editor": null,
+        "area_m2": null,
+        "area_acre": null,
+        "cc&r_pdf": null,
+        "hoa_services": null,
+        "amenities": [
+          "Common Area open space parcels",
+          "Recreational facilities",
+          "Swimming pool",
+          "Spa",
+          "RV parking spaces (on select lots)"
+        ],
+        "hoa_type": "master_association",
+        "master_relationship": null,
+        "parent_master": null,
+        "pets_allowed": "restricted",
+        "pets_restrictions": "Only commonly recognized household pets permitted; no animals, birds, or fowl of other types. Maximum of 4 household pets per unit at any one time.",
+        "rentals_allowed": "unknown",
+        "short_term_allowed": "unknown",
+        "min_lease_days": null,
+        "rentals_restrictions": "Document does not contain explicit rental/leasing restrictions. Board Rules and Regulations may impose additional limits.",
+        "parking_restrictions": "No Commercial Vehicles (those displaying business advertising) or Recreational Vehicles (motorhomes, trailers, boats, campers) on subdivision interest or street except: loading/unloading ≤48 hours per 7-day period; visiting guests with Board written consent; or in designated RV spaces if provided. No vehicle repair/servicing visible from adjacent property. No car washing on streets or driveways. Streets must be clear during scheduled street cleaning.",
+        "architectural_control": "Architectural Review Committee (ARC) appointed by the Board. Approval required before any improvements: buildings, fences, walls, pools, spas, ponds, fountains, landscaping, stonework, concrete work, mechanical/plumbing/electrical, awnings, patio covers. Brush Management Zone One restrictions apply to combustible structures.",
+        "amendment_threshold": "67% of voting power for standard amendments; 75% of voting power for material/Declaration amendments (Article XI, Section 2 & 3). Court-order reduction of threshold is permitted under CA Civil Code §1356.",
+        "board_size": null,
+        "recorded_date": "2003-05-07",
+        "document_type": "CC&Rs",
+        "county": "San Diego",
+        "state": "CA",
+        "documents": [
+          {
+            "type": "CC&R",
+            "url": "https://www.mywhp.com/uploads/1/4/6/3/146388600/cc_rs.pdf",
+            "pdf_path": "HOA_govern_doc_samples/CC&R/CCRS.pdf"
+          }
+        ],
+        "fee_coverage": [
+          "Pool",
+          "Maintenance Grounds",
+          "Common Area Maintenance"
+        ],
+        "member_responsibility": [
+          "Architectural review for changes",
+          "Follow landscaping rules"
+        ],
+        "extraction_confidence": "high",
+        "extraction_method": "llm"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -117.20427018212722,
+              32.962095106289226
+            ],
+            [
+              -117.2042664,
+              32.96370309999999
+            ],
+            [
+              -117.20409925151351,
+              32.96515660099766
+            ],
+            [
+              -117.20397007679603,
+              32.96529494857622
+            ],
+            [
+              -117.20371364843163,
+              32.965355413625105
+            ],
+            [
+              -117.20322966585108,
+              32.965206981591855
+            ],
+            [
+              -117.20311727251985,
+              32.96516410507824
+            ],
+            [
+              -117.20111494448797,
+              32.96488380149045
+            ],
+            [
+              -117.19792530473991,
+              32.96481853021765
+            ],
+            [
+              -117.19518688232209,
+              32.96581717541607
+            ],
+            [
+              -117.1941569,
+              32.9665902
+            ],
+            [
+              -117.1937447,
+              32.9667288
+            ],
+            [
+              -117.193543,
+              32.9664595
+            ],
+            [
+              -117.19322392489687,
+              32.96601307176893
+            ],
+            [
+              -117.19307280000001,
+              32.9656934
+            ],
+            [
+              -117.19265439313259,
+              32.96451504310494
+            ],
+            [
+              -117.19242719999998,
+              32.9645325
+            ],
+            [
+              -117.19068640043395,
+              32.96540051875714
+            ],
+            [
+              -117.189097858963,
+              32.966078399410584
+            ],
+            [
+              -117.18822870497448,
+              32.966359009674754
+            ],
+            [
+              -117.18704551637965,
+              32.96656274446371
+            ],
+            [
+              -117.18697450728642,
+              32.96659156411396
+            ],
+            [
+              -117.186601,
+              32.9656037
+            ],
+            [
+              -117.1863681,
+              32.9651009
+            ],
+            [
+              -117.18681569999997,
+              32.9649633
+            ],
+            [
+              -117.18842236415762,
+              32.96454553202164
+            ],
+            [
+              -117.18970593939282,
+              32.96391174537254
+            ],
+            [
+              -117.19059224840777,
+              32.963163906978444
+            ],
+            [
+              -117.19080307257083,
+              32.9629860195522
+            ],
+            [
+              -117.1914193318959,
+              32.96221044595664
+            ],
+            [
+              -117.19188054843693,
+              32.96127912324754
+            ],
+            [
+              -117.19263906032825,
+              32.959885514242075
+            ],
+            [
+              -117.19418533665583,
+              32.95801518708523
+            ],
+            [
+              -117.19776496485879,
+              32.95188358914551
+            ],
+            [
+              -117.19785831953256,
+              32.95178614311944
+            ],
+            [
+              -117.19849292991488,
+              32.95146034228453
+            ],
+            [
+              -117.19870222101225,
+              32.951362011894695
+            ],
+            [
+              -117.19909741617016,
+              32.951187912518535
+            ],
+            [
+              -117.20001271537996,
+              32.95083902831974
+            ],
+            [
+              -117.20094998212623,
+              32.950542481286654
+            ],
+            [
+              -117.2011194,
+              32.9505986
+            ],
+            [
+              -117.20121,
+              32.95088109999998
+            ],
+            [
+              -117.2013277,
+              32.9511172
+            ],
+            [
+              -117.20146659999997,
+              32.9512308
+            ],
+            [
+              -117.2020088,
+              32.9516134
+            ],
+            [
+              -117.2016554,
+              32.952046
+            ],
+            [
+              -117.20044749999997,
+              32.9533242
+            ],
+            [
+              -117.20022630000001,
+              32.9536964
+            ],
+            [
+              -117.20005460000002,
+              32.9540952
+            ],
+            [
+              -117.19998929999996,
+              32.9543292
+            ],
+            [
+              -117.199949,
+              32.9545716
+            ],
+            [
+              -117.19964529999997,
+              32.9569758
+            ],
+            [
+              -117.199586,
+              32.9573185
+            ],
+            [
+              -117.1994461,
+              32.9577163
+            ],
+            [
+              -117.1993858,
+              32.9578401
+            ],
+            [
+              -117.19916090000001,
+              32.958205
+            ],
+            [
+              -117.1989763,
+              32.9584334
+            ],
+            [
+              -117.1989279,
+              32.9584934
+            ],
+            [
+              -117.19854139999998,
+              32.9588989
+            ],
+            [
+              -117.1983240097085,
+              32.959126689792086
+            ],
+            [
+              -117.19801671514742,
+              32.959518341934825
+            ],
+            [
+              -117.19782222491888,
+              32.959799024902644
+            ],
+            [
+              -117.19769109999996,
+              32.9600778
+            ],
+            [
+              -117.19761189999998,
+              32.9603437
+            ],
+            [
+              -117.1975833,
+              32.9606049
+            ],
+            [
+              -117.19757716723092,
+              32.96081404540248
+            ],
+            [
+              -117.1976292,
+              32.9611069
+            ],
+            [
+              -117.19764718371319,
+              32.96118610787439
+            ],
+            [
+              -117.19790002101028,
+              32.96114694347744
+            ],
+            [
+              -117.19866242270616,
+              32.96108819684946
+            ],
+            [
+              -117.1993664773335,
+              32.96107187833476
+            ],
+            [
+              -117.2001638872705,
+              32.96114694347744
+            ],
+            [
+              -117.20120246509089,
+              32.96136234744583
+            ],
+            [
+              -117.20312013874425,
+              32.961881273031544
+            ],
+            [
+              -117.20427018212722,
+              32.962095106289226
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 16,
+        "hoa_name": "The Groves",
+        "ccr_url": null,
+        "source": null,
+        "status": "Uncited",
+        "notes": null,
+        "hoa_fees": 540.0,
+        "fees_period": "Monthly",
+        "fee_coverage": [
+          "Common Area Maintenance",
+          "Exterior Landscaping",
+          "Sewer",
+          "Trash",
+          "Pool",
+          "Pickleball"
+        ],
+        "last_updated": null,
+        "editor": null,
+        "area_m2": null,
+        "area_acre": null,
+        "cc&r_pdf": null,
+        "hoa_services": null,
+        "amenities": null,
+        "hoa_type": null,
+        "master_relationship": null,
+        "parent_master": null,
+        "pets_allowed": null,
+        "pets_restrictions": null,
+        "rentals_allowed": null,
+        "short_term_allowed": null,
+        "min_lease_days": null,
+        "rentals_restrictions": null,
+        "parking_restrictions": null,
+        "architectural_control": null,
+        "amendment_threshold": null,
+        "board_size": null,
+        "recorded_date": null,
+        "document_type": null,
+        "county": null,
+        "state": null,
+        "documents": null,
+        "member_responsibility": null,
+        "extraction_confidence": null,
+        "extraction_method": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -117.23842493136878,
+              32.93994620858487
+            ],
+            [
+              -117.23613809999998,
+              32.94046989999999
+            ],
+            [
+              -117.23526640000001,
+              32.9400849
+            ],
+            [
+              -117.23551294282315,
+              32.93774493503573
+            ],
+            [
+              -117.23609459999997,
+              32.9375797
+            ],
+            [
+              -117.2373316714674,
+              32.93859407327839
+            ],
+            [
+              -117.23748558523305,
+              32.93871002244062
+            ],
+            [
+              -117.23794212550975,
+              32.93911290232322
+            ],
+            [
+              -117.23832529989777,
+              32.9395543381996
+            ],
+            [
+              -117.23832529989777,
+              32.9395543381996
+            ],
+            [
+              -117.23842493136878,
+              32.93994620858487
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 17,
+        "hoa_name": "Coral Cove",
+        "ccr_url": null,
+        "source": null,
+        "status": "Uncited",
+        "notes": null,
+        "hoa_fees": 560.0,
+        "fees_period": "Monthly",
+        "fee_coverage": [
+          "Common Area Maintenance",
+          "Exterior Bldg Maintenance",
+          "Water"
+        ],
+        "last_updated": null,
+        "editor": null,
+        "area_m2": null,
+        "area_acre": null,
+        "cc&r_pdf": null,
+        "hoa_services": null,
+        "amenities": null,
+        "hoa_type": null,
+        "master_relationship": null,
+        "parent_master": null,
+        "pets_allowed": null,
+        "pets_restrictions": null,
+        "rentals_allowed": null,
+        "short_term_allowed": null,
+        "min_lease_days": null,
+        "rentals_restrictions": null,
+        "parking_restrictions": null,
+        "architectural_control": null,
+        "amendment_threshold": null,
+        "board_size": null,
+        "recorded_date": null,
+        "document_type": null,
+        "county": null,
+        "state": null,
+        "documents": null,
+        "member_responsibility": null,
+        "extraction_confidence": null,
+        "extraction_method": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -117.23526640000001,
+              32.9400849
+            ],
+            [
+              -117.23297748950787,
+              32.940197767070224
+            ],
+            [
+              -117.23290063000816,
+              32.939650476513506
+            ],
+            [
+              -117.23295670844338,
+              32.93916423514997
+            ],
+            [
+              -117.23315504856077,
+              32.93869819766845
+            ],
+            [
+              -117.23330166278646,
+              32.938501224124465
+            ],
+            [
+              -117.23341781852349,
+              32.938190022976514
+            ],
+            [
+              -117.23409855272726,
+              32.9378935310794
+            ],
+            [
+              -117.23480937361954,
+              32.937847902711766
+            ],
+            [
+              -117.2354462979709,
+              32.93775771059661
+            ],
+            [
+              -117.23526640000001,
+              32.9400849
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 18,
+        "hoa_name": "Cambria",
+        "ccr_url": null,
+        "source": null,
+        "status": "Uncited",
+        "notes": null,
+        "hoa_fees": 320.0,
+        "fees_period": "Monthly",
+        "fee_coverage": [
+          "Maintenance Grounds",
+          "Insurance",
+          "Pool",
+          "Tennis Court(s)"
+        ],
+        "last_updated": null,
+        "editor": null,
+        "area_m2": null,
+        "area_acre": null,
+        "cc&r_pdf": null,
+        "hoa_services": null,
+        "amenities": null,
+        "hoa_type": "hoa",
+        "master_relationship": "autonomous_sub",
+        "parent_master": "Del Mar Highlands Master HOA",
+        "pets_allowed": null,
+        "pets_restrictions": null,
+        "rentals_allowed": null,
+        "short_term_allowed": null,
+        "min_lease_days": null,
+        "rentals_restrictions": null,
+        "parking_restrictions": null,
+        "architectural_control": null,
+        "amendment_threshold": null,
+        "board_size": null,
+        "recorded_date": null,
+        "document_type": null,
+        "county": null,
+        "state": null,
+        "documents": null,
+        "member_responsibility": null,
+        "extraction_confidence": null,
+        "extraction_method": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -117.23652955179102,
+              32.96080207542578
+            ],
+            [
+              -117.2361654398809,
+              32.96121584648066
+            ],
+            [
+              -117.2359548328529,
+              32.96143217363302
+            ],
+            [
+              -117.23549551653072,
+              32.961733738280486
+            ],
+            [
+              -117.23498908209011,
+              32.961889869020055
+            ],
+            [
+              -117.23436190811144,
+              32.96193843104581
+            ],
+            [
+              -117.23444493762065,
+              32.96026935048924
+            ],
+            [
+              -117.23447060495249,
+              32.95965583361698
+            ],
+            [
+              -117.23450680517871,
+              32.95899222310164
+            ],
+            [
+              -117.23463632308102,
+              32.95751301112469
+            ],
+            [
+              -117.2360727608552,
+              32.957581250770616
+            ],
+            [
+              -117.23581626349842,
+              32.9583163586541
+            ],
+            [
+              -117.2357258398532,
+              32.95858806672146
+            ],
+            [
+              -117.23565228534771,
+              32.95912953661497
+            ],
+            [
+              -117.23589044263565,
+              32.96003741209981
+            ],
+            [
+              -117.23617153910507,
+              32.960440325582105
+            ],
+            [
+              -117.23652955179102,
+              32.96080207542578
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 19,
+        "hoa_name": "Andalusia",
+        "ccr_url": null,
+        "source": null,
+        "status": "Uncited",
+        "notes": null,
+        "hoa_fees": 334.0,
+        "fees_period": "Monthly",
+        "last_updated": null,
+        "editor": null,
+        "area_m2": null,
+        "area_acre": null,
+        "cc&r_pdf": null,
+        "hoa_services": null,
+        "amenities": null,
+        "hoa_type": null,
+        "master_relationship": null,
+        "parent_master": null,
+        "pets_allowed": null,
+        "pets_restrictions": null,
+        "rentals_allowed": null,
+        "short_term_allowed": null,
+        "min_lease_days": null,
+        "rentals_restrictions": null,
+        "parking_restrictions": null,
+        "architectural_control": null,
+        "amendment_threshold": null,
+        "board_size": null,
+        "recorded_date": null,
+        "document_type": null,
+        "county": null,
+        "state": null,
+        "documents": null,
+        "fee_coverage": null,
+        "member_responsibility": null,
+        "extraction_confidence": null,
+        "extraction_method": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -117.23010069999998,
+              32.9491921
+            ],
+            [
+              -117.22902053563011,
+              32.94917891275682
+            ],
+            [
+              -117.22902162085953,
+              32.946736959660946
+            ],
+            [
+              -117.22957195969217,
+              32.946924319160516
+            ],
+            [
+              -117.22998133215106,
+              32.94696045554161
+            ],
+            [
+              -117.23012029450751,
+              32.94699617950523
+            ],
+            [
+              -117.23014440000001,
+              32.9471997
+            ],
+            [
+              -117.23010069999998,
+              32.9491921
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 20,
+        "hoa_name": "Montemar",
+        "ccr_url": null,
+        "source": null,
+        "status": "Uncited",
+        "notes": null,
+        "hoa_fees": 312.0,
+        "fees_period": "Monthly",
+        "fee_coverage": [
+          "Pool",
+          "Tennis Court(s)"
+        ],
+        "last_updated": null,
+        "editor": null,
+        "area_m2": null,
+        "area_acre": null,
+        "cc&r_pdf": null,
+        "hoa_services": null,
+        "amenities": null,
+        "hoa_type": null,
+        "master_relationship": null,
+        "parent_master": null,
+        "pets_allowed": null,
+        "pets_restrictions": null,
+        "rentals_allowed": null,
+        "short_term_allowed": null,
+        "min_lease_days": null,
+        "rentals_restrictions": null,
+        "parking_restrictions": null,
+        "architectural_control": null,
+        "amendment_threshold": null,
+        "board_size": null,
+        "recorded_date": null,
+        "document_type": null,
+        "county": null,
+        "state": null,
+        "documents": null,
+        "member_responsibility": null,
+        "extraction_confidence": null,
+        "extraction_method": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -117.22825341566204,
+              32.948818033554474
+            ],
+            [
+              -117.22781455320163,
+              32.94907779201398
+            ],
+            [
+              -117.22761148914509,
+              32.949142580601894
+            ],
+            [
+              -117.22739677705827,
+              32.94922433071536
+            ],
+            [
+              -117.22733170735334,
+              32.94922764302335
+            ],
+            [
+              -117.22716454782645,
+              32.94928603964203
+            ],
+            [
+              -117.22715749776525,
+              32.949299046177465
+            ],
+            [
+              -117.22686037177537,
+              32.94941895264705
+            ],
+            [
+              -117.22673275153944,
+              32.94947041758706
+            ],
+            [
+              -117.22668530288598,
+              32.94949442426939
+            ],
+            [
+              -117.22642993032747,
+              32.94960101667304
+            ],
+            [
+              -117.22630871954759,
+              32.94961726078594
+            ],
+            [
+              -117.22603721382535,
+              32.94971780548637
+            ],
+            [
+              -117.22581531477884,
+              32.94975916276299
+            ],
+            [
+              -117.22573459999997,
+              32.9496266
+            ],
+            [
+              -117.225713,
+              32.9495124
+            ],
+            [
+              -117.22567580000002,
+              32.9492843
+            ],
+            [
+              -117.22566530000002,
+              32.9489972
+            ],
+            [
+              -117.2256848,
+              32.9487685
+            ],
+            [
+              -117.2257888,
+              32.948413
+            ],
+            [
+              -117.22582530000001,
+              32.9483516
+            ],
+            [
+              -117.22594730000002,
+              32.9481059
+            ],
+            [
+              -117.22599,
+              32.9480377
+            ],
+            [
+              -117.2262683,
+              32.9477219
+            ],
+            [
+              -117.22632240000002,
+              32.9476778
+            ],
+            [
+              -117.22677859999997,
+              32.9473169
+            ],
+            [
+              -117.22787110000002,
+              32.9483077
+            ],
+            [
+              -117.2279172,
+              32.9483545
+            ],
+            [
+              -117.22825341566204,
+              32.948818033554474
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "fid": 21,
+        "hoa_name": "West Portico Community Association",
+        "ccr_url": null,
+        "source": "Other",
+        "status": "Uncited",
+        "notes": null,
+        "hoa_fees": 244.0,
+        "fees_period": "Monthly",
+        "last_updated": null,
+        "editor": null,
+        "area_m2": null,
+        "area_acre": null,
+        "cc&r_pdf": null,
+        "hoa_services": null,
+        "amenities": null,
+        "hoa_type": null,
+        "master_relationship": "autonomous_sub",
+        "parent_master": "West Highlands Pacific HOA",
+        "pets_allowed": null,
+        "pets_restrictions": null,
+        "rentals_allowed": null,
+        "short_term_allowed": null,
+        "min_lease_days": null,
+        "rentals_restrictions": null,
+        "parking_restrictions": null,
+        "architectural_control": null,
+        "amendment_threshold": null,
+        "board_size": null,
+        "recorded_date": null,
+        "document_type": null,
+        "county": null,
+        "state": null,
+        "documents": null,
+        "fee_coverage": null,
+        "member_responsibility": null,
+        "extraction_confidence": null,
+        "extraction_method": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -117.19242719999998,
+              32.9645325
+            ],
+            [
+              -117.19068640043395,
+              32.96540051875714
+            ],
+            [
+              -117.189097858963,
+              32.966078399410584
+            ],
+            [
+              -117.18822870497448,
+              32.966359009674754
+            ],
+            [
+              -117.18704697030284,
+              32.96656537013657
+            ],
+            [
+              -117.18697450728642,
+              32.96659156411396
+            ],
+            [
+              -117.186601,
+              32.9656037
+            ],
+            [
+              -117.1863681,
+              32.9651009
+            ],
+            [
+              -117.1868666,
+              32.9649528
+            ],
+            [
+              -117.18842590936119,
+              32.96455236826763
+            ],
+            [
+              -117.18970593939282,
+              32.96391174537254
+            ],
+            [
+              -117.19059224840777,
+              32.963163906978444
+            ],
+            [
+              -117.19242719999998,
+              32.9645325
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

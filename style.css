@@ -1,0 +1,932 @@
+/* HOA Atlas – style.css
+   Full-viewport Leaflet map with fixed header, floating panels.
+   Complements hoastatusstyle.css (policy compare panel).
+   Never overrides .leaflet-* rules.
+*/
+
+/* ── Reset ── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 14px;
+  color: #222;
+  background: #c8d4e0;
+}
+
+/* ── Header ── */
+#title {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 48px;
+  z-index: 2000;
+  margin: 0;
+  padding: 0 16px;
+  background: #1c2b4a;
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+}
+
+/* ── Map ── */
+#mapid {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 0;
+}
+
+/* Push Leaflet top-left controls (zoom, draw) below header + filter bar */
+#mapid .leaflet-top {
+  top: 165px;
+}
+
+/* ── Filter panel ── */
+.filter-panel {
+  position: fixed;
+  top: 48px;
+  left: 0;
+  right: 320px; /* leave room for summary sidebar */
+  z-index: 1500;
+  background: #fff;
+  border-bottom: 1px solid #ccc;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  padding: 6px 12px;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 10px;
+  padding: 2px 0;
+}
+
+.filter-row + .filter-row {
+  border-top: 1px solid #eee;
+  margin-top: 4px;
+  padding-top: 4px;
+}
+
+.filter-label {
+  font-weight: 600;
+  color: #1c2b4a;
+  white-space: nowrap;
+}
+
+.filter-sub {
+  font-weight: 500;
+  color: #555;
+  white-space: nowrap;
+}
+
+.filter-sep {
+  color: #c0c0c0;
+  font-size: 11px;
+  user-select: none;
+}
+
+.filter-row label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.filter-checkbox-wrap {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  align-items: center;
+}
+
+.filter-tag-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.filter-fills,
+.filter-auto-refresh {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+.filter-panel select {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 13px;
+  font-family: inherit;
+  background: #fff;
+  color: #222;
+}
+
+.filter-panel select:focus {
+  outline: none;
+  border-color: #1c2b4a;
+  box-shadow: 0 0 0 2px rgba(28, 43, 74, 0.15);
+}
+
+#refreshDataBtn {
+  padding: 4px 10px;
+  border: 1px solid #bbb;
+  border-radius: 4px;
+  background: #f0f0f0;
+  color: #333;
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+#refreshDataBtn:hover {
+  background: #e0e0e0;
+  border-color: #999;
+}
+
+/* ── Summary sidebar ── */
+#summaryLabel {
+  position: fixed;
+  top: 48px;
+  right: 0;
+  width: 320px;
+  bottom: 0;
+  z-index: 1490;
+  background: #fff;
+  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.14);
+  overflow-y: auto;
+  padding: 14px 16px 20px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+#summaryLabel p {
+  margin: 0 0 8px;
+  color: #555;
+}
+
+#summaryLabel h2 {
+  margin: 0 0 10px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1c2b4a;
+  border-bottom: 2px solid #1c2b4a;
+  padding-bottom: 6px;
+}
+
+#summaryLabel h3 {
+  margin: 14px 0 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1c2b4a;
+}
+
+#summaryLabel table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+
+#summaryLabel table th {
+  text-align: left;
+  font-weight: 600;
+  color: #555;
+  padding: 4px 8px 4px 0;
+  vertical-align: top;
+  width: 36%;
+  white-space: nowrap;
+}
+
+#summaryLabel table td {
+  padding: 4px 0 4px 4px;
+  vertical-align: top;
+  color: #222;
+  word-break: break-word;
+}
+
+#summaryLabel table tr:not(:last-child) th,
+#summaryLabel table tr:not(:last-child) td {
+  border-bottom: 1px solid #f0f0f0;
+}
+
+#summaryLabel a {
+  color: #1c2b4a;
+  text-decoration: underline;
+}
+
+#summaryLabel a:hover {
+  color: #2e5080;
+}
+
+/* ── Tag pills ── */
+.fee-coverage-tags,
+.amenities-tags,
+.member-responsibility-tags {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.fee-coverage-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  background: #e3f2fd;
+  border: 1px solid #90caf9;
+  color: #1565c0;
+  white-space: nowrap;
+}
+
+.amenity-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  background: #f3e5f5;
+  border: 1px solid #ce93d8;
+  color: #6a1b9a;
+  white-space: nowrap;
+}
+
+.member-responsibility-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  background: #fff8e1;
+  border: 1px solid #ffcc80;
+  color: #e65100;
+  white-space: nowrap;
+}
+
+.member-responsibilities-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.member-responsibilities-notes {
+  font-size: 11px;
+  color: #666;
+  margin: 2px 0 0;
+  font-style: italic;
+}
+
+/* ── Document links ── */
+.doc-links {
+  display: block;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+/* ── HOA summary blocks (multi-select) ── */
+.hoa-summary-block {
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  padding: 8px 10px;
+  margin-bottom: 8px;
+  background: #fafafa;
+}
+
+.hoa-aggregate {
+  border: 2px solid #1c2b4a;
+  border-radius: 4px;
+  padding: 8px 10px;
+  margin-top: 10px;
+  background: #eef2f8;
+}
+
+.hoa-aggregate h3 {
+  margin: 0 0 6px;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.hoa-aggregate p {
+  margin: 0 0 6px;
+  color: #222;
+  font-size: 13px;
+}
+
+.agg-breakdown {
+  font-size: 11px;
+  color: #666;
+}
+
+/* ── Edit buttons in summary ── */
+.edit-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.edit-buttons button {
+  padding: 6px 14px;
+  border-radius: 4px;
+  border: none;
+  background: #1c2b4a;
+  color: #fff;
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.edit-buttons button:hover {
+  background: #2e5080;
+}
+
+/* ── Edit history ── */
+.summary-edit-history {
+  margin-top: 14px;
+  font-size: 12px;
+}
+
+.summary-edit-history h4 {
+  margin: 0 0 5px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+.edit-history-none {
+  color: #999;
+  font-style: italic;
+  margin: 0;
+}
+
+.edit-history-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.edit-history-list li {
+  padding: 3px 0;
+  border-bottom: 1px solid #f0f0f0;
+  color: #555;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+/* ── Comments ── */
+.summary-comments {
+  margin-top: 14px;
+  font-size: 12px;
+}
+
+.summary-comments h4 {
+  margin: 0 0 6px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+.comments-list {
+  margin-bottom: 8px;
+}
+
+.comment-entry {
+  padding: 6px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.comment-meta {
+  font-size: 11px;
+  color: #999;
+  margin-bottom: 2px;
+}
+
+.comment-text {
+  margin: 0 0 4px;
+  color: #333;
+  font-size: 12px;
+}
+
+.comment-votes {
+  display: flex;
+  gap: 6px;
+}
+
+.comment-vote-btn {
+  padding: 1px 7px;
+  border: 1px solid #ddd;
+  background: #f5f5f5;
+  border-radius: 3px;
+  font-size: 11px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.comment-vote-btn:hover {
+  background: #e8e8e8;
+}
+
+.comment-add {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.comment-add-text {
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 5px 8px;
+  font-family: inherit;
+  font-size: 12px;
+  resize: vertical;
+  color: #222;
+}
+
+.comment-add-text:focus {
+  outline: none;
+  border-color: #1c2b4a;
+  box-shadow: 0 0 0 2px rgba(28, 43, 74, 0.15);
+}
+
+.comment-add button {
+  align-self: flex-end;
+  padding: 5px 12px;
+  border: none;
+  border-radius: 4px;
+  background: #1c2b4a;
+  color: #fff;
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.comment-add button:hover {
+  background: #2e5080;
+}
+
+/* ── Legend (Leaflet bottomright control) ── */
+.legend {
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-size: 12px;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.15);
+  line-height: 1.5;
+  min-width: 140px;
+}
+
+.legend h4 {
+  margin: 0 0 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #1c2b4a;
+}
+
+.legend-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 3px;
+  color: #333;
+}
+
+.legend-swatch {
+  display: inline-block;
+  width: 18px;
+  height: 13px;
+  border: 1px solid #999;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+/* ── HOA map label (custom Leaflet tooltip class) ── */
+.hoa-label {
+  background: rgba(255, 255, 255, 0.88) !important;
+  border: 1px solid #aaa !important;
+  border-radius: 3px !important;
+  padding: 1px 5px !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  color: #1c2b4a !important;
+  white-space: nowrap !important;
+  box-shadow: none !important;
+}
+
+/* ── Profile panel ── */
+.profile-panel {
+  position: fixed;
+  bottom: 12px;
+  left: 8px;
+  z-index: 1490;
+  background: #fafafa;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.14);
+  padding: 12px 14px;
+  width: 290px;
+  max-height: 55vh;
+  overflow-y: auto;
+  font-size: 13px;
+}
+
+.profile-panel p {
+  margin: 0 0 8px;
+}
+
+.profile-heading {
+  margin: 0 0 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1c2b4a;
+}
+
+.profile-note {
+  font-size: 11px;
+  font-weight: 400;
+  color: #999;
+}
+
+.profile-hoa-name-row {
+  margin: 0 0 8px;
+}
+
+.profile-panel label {
+  display: inline-flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 5px;
+  cursor: pointer;
+}
+
+.profile-panel input[type="text"],
+.profile-panel select {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 3px 7px;
+  font-size: 12px;
+  font-family: inherit;
+  color: #222;
+  background: #fff;
+}
+
+.profile-panel input[type="text"]:focus,
+.profile-panel select:focus {
+  outline: none;
+  border-color: #1c2b4a;
+  box-shadow: 0 0 0 2px rgba(28, 43, 74, 0.15);
+}
+
+#profileSave {
+  padding: 5px 12px;
+  border: none;
+  border-radius: 4px;
+  background: #1c2b4a;
+  color: #fff;
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+#profileSave:hover {
+  background: #2e5080;
+}
+
+/* ── Document viewer panel ── */
+.doc-viewer-panel {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1700;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.22);
+  padding: 16px 20px;
+  min-width: 260px;
+  max-width: 420px;
+  width: 90vw;
+  max-height: 72vh;
+  overflow-y: auto;
+  font-size: 13px;
+}
+
+.doc-viewer-panel h3 {
+  margin: 0 0 10px;
+  font-size: 1rem;
+  color: #1c2b4a;
+}
+
+#docViewerList {
+  margin-bottom: 12px;
+  color: #333;
+}
+
+#docViewerList ul {
+  list-style: disc;
+  padding-left: 18px;
+  margin: 0;
+}
+
+#docViewerList li {
+  padding: 3px 0;
+}
+
+#docViewerList a {
+  color: #1c2b4a;
+  text-decoration: underline;
+}
+
+#docViewerList a:hover {
+  color: #2e5080;
+}
+
+#docViewerFooter {
+  margin: 0;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+#docViewerClose {
+  padding: 5px 12px;
+  border: 1px solid #bbb;
+  border-radius: 4px;
+  background: #f0f0f0;
+  color: #333;
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+#docViewerClose:hover {
+  background: #e0e0e0;
+}
+
+#docViewerPropose {
+  padding: 5px 12px;
+  border: 1px solid #1c2b4a;
+  border-radius: 4px;
+  background: transparent;
+  color: #1c2b4a;
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+#docViewerPropose:hover {
+  background: #eef2f8;
+}
+
+/* ── Edit details panel ── */
+.edit-panel {
+  position: fixed;
+  top: 56px;
+  right: 330px;
+  z-index: 1600;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+  padding: 14px 18px;
+  width: 460px;
+  max-width: calc(100vw - 350px);
+  max-height: calc(100vh - 64px);
+  overflow-y: auto;
+  font-size: 13px;
+}
+
+.edit-panel h3 {
+  margin: 0 0 12px;
+  font-size: 1rem;
+  color: #1c2b4a;
+}
+
+.edit-panel p {
+  margin: 0 0 8px;
+}
+
+.edit-docs-heading {
+  margin: 10px 0 5px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #444;
+}
+
+.edit-docs-note {
+  font-size: 11px;
+  color: #777;
+  margin: 0 0 8px;
+  font-style: italic;
+}
+
+.edit-doc-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 5px;
+  font-size: 13px;
+}
+
+.edit-checkbox-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  margin-bottom: 4px;
+}
+
+.edit-checkbox-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.doc-pdf-status {
+  font-size: 11px;
+  color: #555;
+  font-style: italic;
+}
+
+#editDetailsSave {
+  padding: 5px 14px;
+  border: none;
+  border-radius: 4px;
+  background: #1c2b4a;
+  color: #fff;
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+#editDetailsSave:hover {
+  background: #2e5080;
+}
+
+#editDetailsCancel {
+  padding: 5px 14px;
+  border: 1px solid #bbb;
+  border-radius: 4px;
+  background: #f0f0f0;
+  color: #333;
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+#editDetailsCancel:hover {
+  background: #e0e0e0;
+}
+
+/* ── VGI panel ── */
+#vgiPanel {
+  position: fixed;
+  top: 56px;
+  left: 8px;
+  z-index: 1600;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+  padding: 14px 18px;
+  width: 450px;
+  max-width: calc(100vw - 340px);
+  max-height: calc(100vh - 64px);
+  overflow-y: auto;
+  font-size: 13px;
+}
+
+#vgiPanel h2 {
+  margin: 0 0 10px;
+  font-size: 1rem;
+  color: #1c2b4a;
+}
+
+#vgiPanel p {
+  margin: 0 0 8px;
+}
+
+.vgi-docs-heading {
+  margin: 10px 0 4px;
+  font-size: 13px;
+}
+
+.vgi-doc-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 5px;
+}
+
+#vgi_output {
+  width: 100%;
+  font-family: monospace;
+  font-size: 11px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 6px;
+  resize: vertical;
+  background: #fafafa;
+  color: #333;
+}
+
+#vgiPanel button {
+  padding: 5px 12px;
+  border: none;
+  border-radius: 4px;
+  background: #1c2b4a;
+  color: #fff;
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+#vgiPanel button:hover {
+  background: #2e5080;
+}
+
+/* ── Shared form inputs (scoped to app panels only) ── */
+.edit-panel input[type="text"],
+.edit-panel input[type="number"],
+.edit-panel input[type="url"],
+.edit-panel select,
+.edit-panel textarea,
+#vgiPanel input[type="text"],
+#vgiPanel input[type="number"],
+#vgiPanel input[type="url"],
+#vgiPanel select,
+#vgiPanel textarea {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 4px 7px;
+  font-size: 13px;
+  font-family: inherit;
+  color: #222;
+  background: #fff;
+}
+
+.edit-panel input[type="text"]:focus,
+.edit-panel input[type="number"]:focus,
+.edit-panel input[type="url"]:focus,
+.edit-panel select:focus,
+.edit-panel textarea:focus,
+#vgiPanel input[type="text"]:focus,
+#vgiPanel input[type="number"]:focus,
+#vgiPanel input[type="url"]:focus,
+#vgiPanel select:focus,
+#vgiPanel textarea:focus {
+  outline: none;
+  border-color: #1c2b4a;
+  box-shadow: 0 0 0 2px rgba(28, 43, 74, 0.15);
+}
+
+/* ── Debug output ── */
+#test_output {
+  position: fixed;
+  bottom: 4px;
+  left: 4px;
+  z-index: 9999;
+  font-size: 11px;
+  color: #c00;
+  background: rgba(255, 255, 255, 0.85);
+  padding: 2px 6px;
+  border-radius: 3px;
+  pointer-events: none;
+  max-width: 280px;
+  word-break: break-all;
+}

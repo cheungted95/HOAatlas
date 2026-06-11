@@ -1,0 +1,2113 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <title>Homeowner Associations in Carmel Valley, San Diego 92130</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.css" type="text/css" crossorigin="">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.js" crossorigin=""></script>
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
+
+
+
+    <link rel="stylesheet" href="style.css" type="text/css">
+    <link rel="stylesheet" href="hoastatusstyle.css" type="text/css">
+
+    <!-- Deployment config: all data/backend URLs live in config.js (edit that file, not this one) -->
+    <script src="config.js"></script>
+
+    <script type="text/javascript">
+        // globals
+        var map;
+        var hoaLayer;
+        var drawnItems;
+        var pendingGeom = null;   // geometry for the current VGI polygon
+        var allHoaFeatures = null;  // full GeoJSON FeatureCollection for filtering
+        var LABEL_ZOOM_THRESHOLD = 15;
+        // URLs come from config.js (window.HOA_CONFIG); fallbacks keep the file usable standalone.
+        var HOA_CFG = window.HOA_CONFIG || {};
+        var DATA_URL = HOA_CFG.DATA_URL || 'hoa_poly.geojson';
+        // Optional document API (Flask doc_api.py). null/undefined = static mode:
+        // document links are read directly from feature properties.
+        var DOC_API_BASE = (HOA_CFG.DOC_API_BASE !== undefined) ? HOA_CFG.DOC_API_BASE : null;
+        var refreshIntervalId = null;
+        var hoaLegendDiv = null;       // legend container (updated when symbology or filters change)
+        var selectedFeature = null;   // single HOA feature (for editing); when multiple at point, first or null
+        var selectedFeatures = [];   // all HOA features at the click point (for overlapping HOAs)
+        var selection = [];           // array of layers currently selected (highlighted)
+        var editingLayer = null;      // layer in drawnItems when editing shape
+        var comparisonEntries = [];   // { feature, layer } for policy compare (max 3)
+
+        // Document types: URL and/or PDF (PDF stored as data URL in prototype; backend would store URL)
+        var DOCUMENT_TYPES = ["CC&R", "Articles of Incorporation", "Bylaws", "Rules & Regulations"];
+
+        // Get documents array from feature, merging legacy ccr_url into CC&R
+        function getDocumentsList(p) {
+          var list = p.documents && Array.isArray(p.documents) ? p.documents.slice() : [];
+          var hasCcr = list.some(function (d) { return d.type === "CC&R"; });
+          if (!hasCcr && p.ccr_url) {
+            list.unshift({ type: "CC&R", url: p.ccr_url, pdf: null });
+          }
+          return list.length ? list : [];
+        }
+
+        // Ensure feature has documents array (call after loading GeoJSON)
+        function ensureDocuments(p) {
+          if (!p.documents || !Array.isArray(p.documents)) {
+            p.documents = [];
+            if (p.ccr_url) p.documents.push({ type: "CC&R", url: p.ccr_url, pdf: null });
+          }
+        }
+
+        var DOC_TYPE_SLUG = { "CC&R": "ccr", "Articles of Incorporation": "articles", "Bylaws": "bylaws", "Rules & Regulations": "rules" };
+        var editDocPdfs = {};  // slug -> data URL when user uploads PDF in edit form
+        var vgiDocPdfs = {};   // slug -> data URL when user uploads PDF in VGI form
+
+        // Fee coverage: what HOA fees cover (on-paper). Used as tags below fees.
+        var FEE_COVERAGE_OPTIONS = [
+          "Pool", "Tennis Court(s)", "Pickleball",
+          "Trash", "Landscaping", "Maintenance Grounds", "Common Area Maintenance",
+          "Exterior Bldg Maintenance", "Exterior Landscaping", "Water", "Sewer", "Insurance"
+        ];
+        // Member responsibilities: what the HOA expects of residents
+        var MEMBER_RESPONSIBILITY_OPTIONS = [
+          "Yard maintenance (owner)", "Exterior paint approval", "Architectural review for changes",
+          "Follow landscaping rules"
+        ];
+
+        // --- Account / edit history / comments (prepared for future backend) ---
+        // Data model (per feature): edit_history[], last_edited_at, last_edited_by, comments[]
+        // edit_history: [ { at: ISO date, by: username, summary: string }, ... ]
+        // comments: [ { id: string, at: ISO date, by: username, text: string, up: number, down: number }, ... ]
+        // Profile (localStorage until auth): display name, flair, is_hoa_member, hoa_name
+        var USER_PROFILE_KEY = 'hoa_atlas_user_profile';
+        var USER_FLAIR_OPTIONS = ['Real estate agent', 'Homeowner', 'Tenant', 'Other'];
+        function getCurrentUser() {
+          try {
+            var raw = localStorage.getItem(USER_PROFILE_KEY);
+            var o = raw ? JSON.parse(raw) : {};
+            return {
+              username: (o.username && String(o.username).trim()) || 'Anonymous',
+              flair: o.flair || '',
+              is_hoa_member: !!o.is_hoa_member,
+              hoa_name: (o.hoa_name && String(o.hoa_name).trim()) || ''
+            };
+          } catch (e) { return { username: 'Anonymous', flair: '', is_hoa_member: false, hoa_name: '' }; }
+        }
+        function setUserProfile(o) {
+          try { localStorage.setItem(USER_PROFILE_KEY, JSON.stringify(o)); } catch (e) {}
+        }
+        function loadProfileIntoForm() {
+          var u = getCurrentUser();
+          var el = document.getElementById('profile_username');
+          if (el) el.value = u.username === 'Anonymous' ? '' : u.username;
+          el = document.getElementById('profile_flair');
+          if (el) el.value = u.flair || '';
+          el = document.getElementById('profile_hoa_member');
+          if (el) el.checked = u.is_hoa_member;
+          el = document.getElementById('profile_hoa_name');
+          if (el) el.value = u.hoa_name || '';
+        }
+        function simpleId() { return 'id_' + Date.now() + '_' + Math.random().toString(36).slice(2, 9); }
+
+        // point-in-polygon (ray casting) for Leaflet LatLng ring
+        function pointInPolygon(latlng, ring) {
+          if (!ring || ring.length < 3) return false;
+          var x = latlng.lng, y = latlng.lat;
+          var n = ring.length;
+          var inside = false;
+          for (var i = 0, j = n - 1; i < n; j = i++) {
+            var xi = ring[i].lng, yi = ring[i].lat;
+            var xj = ring[j].lng, yj = ring[j].lat;
+            if (((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi)) inside = !inside;
+          }
+          return inside;
+        }
+
+        function init() {
+
+            // create map and set center and zoom level
+            map = L.map('mapid').setView([32.95, -117.20], 14);
+
+            // CARTO Voyager basemap (no Referer header requirement)
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+                subdomains: 'abcd',
+                maxZoom: 20
+            }).addTo(map);
+
+            // --- Legend for CC&R status ---
+            var legend = L.control({ position: 'bottomright' });
+
+            legend.onAdd = function (map) {
+              var div = L.DomUtil.create('div', 'legend');
+              hoaLegendDiv = div;
+              updateLegendContent();
+              return div;
+            };
+
+            legend.addTo(map);
+
+            // Legend content: status vs monthly fee ramp (set by updateLegendContent when symbology changes)
+            function updateLegendContent() {
+              if (!hoaLegendDiv) return;
+              var sym = (document.getElementById('symbologySelect') && document.getElementById('symbologySelect').value) || 'status';
+              if (sym === 'fee') {
+                hoaLegendDiv.innerHTML = '<h4>Monthly fee ($)</h4>' +
+                  '<div class="legend-row"><span class="legend-swatch" style="background:#ffffb2;"></span> &lt; 50</div>' +
+                  '<div class="legend-row"><span class="legend-swatch" style="background:#fecc5c;"></span> 50 – 150</div>' +
+                  '<div class="legend-row"><span class="legend-swatch" style="background:#fd8d3c;"></span> 150 – 300</div>' +
+                  '<div class="legend-row"><span class="legend-swatch" style="background:#f03b20;"></span> 300 – 500</div>' +
+                  '<div class="legend-row"><span class="legend-swatch" style="background:#bd0026;"></span> 500+</div>';
+              } else {
+                hoaLegendDiv.innerHTML = '<h4>CC&amp;R status</h4>' +
+                  '<div class="legend-row"><span class="legend-swatch" style="background:#A8E6A1;"></span> CC&amp;R Verified</div>' +
+                  '<div class="legend-row"><span class="legend-swatch" style="background:#8EC8FF;"></span> CC&amp;R Cited</div>' +
+                  '<div class="legend-row"><span class="legend-swatch" style="background:#D2B48C;"></span> Uncited</div>' +
+                  '<div class="legend-row"><span class="legend-swatch" style="background:#CCCCCC;"></span> Other / unknown</div>';
+              }
+            }
+
+            // Fee choropleth breakpoints (monthly $) and colors (yellow -> red)
+            var FEE_BREAKS = [0, 50, 150, 300, 500, 1e9];
+            var FEE_COLORS = ['#ffffb2', '#fecc5c', '#fd8d3c', '#f03b20', '#bd0026'];
+            function getFeeColor(monthly) {
+              if (monthly == null || isNaN(monthly)) return '#CCCCCC';
+              for (var i = 0; i < FEE_BREAKS.length - 1; i++) {
+                if (monthly >= FEE_BREAKS[i] && monthly < FEE_BREAKS[i + 1]) return FEE_COLORS[i];
+              }
+              return FEE_COLORS[FEE_COLORS.length - 1];
+            }
+
+            function showFills() {
+              var el = document.getElementById('filter_show_fills');
+              return !el || el.checked;
+            }
+
+            // outline-only style for HOAs that don't match current filter (they stay on map but unfilled)
+            function hoaStyleOutlineOnly() {
+              return { color: '#333333', fillColor: '#CCCCCC', fillOpacity: 0, weight: 2 };
+            }
+
+            // style by CC&R status (default); non-matching filter = outline only
+            function hoaStyle(feature) {
+              if (!featureMatchesCurrentFilter(feature)) return hoaStyleOutlineOnly();
+              var base = { color: '#333333', weight: 2 };
+              var fillOpacity = showFills() ? 0.6 : 0;
+              switch (feature.properties.status) {
+                case "CC&R Cited":
+                  return { color: base.color, fillColor: '#8EC8FF', fillOpacity: fillOpacity, weight: base.weight };
+                case "Uncited":
+                  return { color: base.color, fillColor: '#D2B48C', fillOpacity: fillOpacity, weight: base.weight };
+                case "CC&R Verified":
+                  return { color: base.color, fillColor: '#A8E6A1', fillOpacity: fillOpacity, weight: base.weight };
+                default:
+                  return { color: base.color, fillColor: '#CCCCCC', fillOpacity: showFills() ? 0.4 : 0, weight: base.weight };
+              }
+            }
+
+            // style by monthly fee (choropleth); non-matching filter = outline only
+            function hoaStyleByFee(feature) {
+              if (!featureMatchesCurrentFilter(feature)) return hoaStyleOutlineOnly();
+              var p = feature.properties || {};
+              var me = monthlyEquivalent(p.hoa_fees, p.fees_period);
+              var fill = getFeeColor(me);
+              var fillOpacity = showFills() ? 0.7 : 0;
+              return { color: '#333333', fillColor: fill, fillOpacity: fillOpacity, weight: 2 };
+            }
+
+            // reset previously selected features (all highlighted layers)
+            function resetStyles() {
+              if (hoaLayer && selection && selection.length) {
+                for (var i = 0; i < selection.length; i++) hoaLayer.resetStyle(selection[i]);
+              }
+              selection = [];
+            }
+
+            function isMissing(val) {
+              return val === null ||
+                val === undefined ||
+                (typeof val === "string" && val.trim() === "") ||
+                (typeof val === "string" && val.trim().toUpperCase() === "NULL");
+            }
+
+            // Build one HOA block (name, status, fees, documents) for summary table
+            function addHoaRowsToTable(table, p, addRow) {
+              var name = !isMissing(p.hoa_name) ? p.hoa_name : "Unnamed HOA";
+              var status = !isMissing(p.status) ? p.status : "Status unknown";
+              var fees = (p.hoa_fees != null && p.fees_period)
+                ? "$" + p.hoa_fees + " " + p.fees_period
+                : "Not listed";
+              addRow("HOA", name);
+              addRow("Status", status);
+              addRow("Fees", fees);
+              var feeCov = p.fee_coverage && Array.isArray(p.fee_coverage) ? p.fee_coverage : [];
+              if (feeCov.length) {
+                var feeWrap = document.createElement("span");
+                feeWrap.className = "fee-coverage-tags";
+                feeCov.forEach(function (tag) {
+                  var sp = document.createElement("span");
+                  sp.className = "fee-coverage-tag";
+                  sp.textContent = tag;
+                  feeWrap.appendChild(sp);
+                });
+                addRow("Fee covers", feeWrap);
+              } else {
+                addRow("Fee covers", "Not specified");
+              }
+              var resp = p.member_responsibilities && Array.isArray(p.member_responsibilities) ? p.member_responsibilities : [];
+              var respNotes = p.member_responsibilities_notes && String(p.member_responsibilities_notes).trim();
+              if (resp.length || respNotes) {
+                var respWrap = document.createElement("div");
+                respWrap.className = "member-responsibilities-wrap";
+                if (resp.length) {
+                  var tagRow = document.createElement("span");
+                  tagRow.className = "member-responsibility-tags";
+                  resp.forEach(function (r) {
+                    var sp = document.createElement("span");
+                    sp.className = "member-responsibility-tag";
+                    sp.textContent = r;
+                    tagRow.appendChild(sp);
+                  });
+                  respWrap.appendChild(tagRow);
+                }
+                if (respNotes) {
+                  var note = document.createElement("p");
+                  note.className = "member-responsibilities-notes";
+                  note.textContent = respNotes;
+                  respWrap.appendChild(note);
+                }
+                addRow("Member responsibilities", respWrap);
+              } else {
+                addRow("Member responsibilities", "Not specified");
+              }
+              // --- Policy fields: pets, rentals, parking, amenities ---
+              var petsVal = p.pets_allowed !== undefined && p.pets_allowed !== null ? p.pets_allowed : (p.pets_restrictions ? 'Restricted' : 'Not specified');
+              var petsNotes = p.pets_restrictions ? String(p.pets_restrictions).trim() : null;
+              var petsNode = petsNotes ? (petsVal + ' — ' + petsNotes) : petsVal;
+              addRow('Pets', petsNode || 'Not specified');
+
+              var rentVal = p.rentals_allowed !== undefined && p.rentals_allowed !== null ? p.rentals_allowed : 'Not specified';
+              var shortVal = p.short_term_allowed !== undefined && p.short_term_allowed !== null ? p.short_term_allowed : 'Not specified';
+              addRow('Rentals allowed', rentVal);
+              addRow('Short-term rentals', shortVal);
+
+              var park = p.parking_restrictions && String(p.parking_restrictions).trim();
+              addRow('Parking restrictions', park || 'Not specified');
+
+              var amens = p.amenities && Array.isArray(p.amenities) ? p.amenities : [];
+              if (amens.length) {
+                var amWrap = document.createElement('span');
+                amWrap.className = 'amenities-tags';
+                amens.forEach(function (a) { var sp = document.createElement('span'); sp.className = 'amenity-tag'; sp.textContent = a; amWrap.appendChild(sp); });
+                addRow('Amenities', amWrap);
+              } else {
+                addRow('Amenities', 'Not specified');
+              }
+
+              // Governance fields
+              var arch = p.architectural_control ? String(p.architectural_control) : null;
+              var amend = p.amendment_threshold ? String(p.amendment_threshold) : null;
+              var bsize = p.board_size ? String(p.board_size) : null;
+              if (arch || amend || bsize) {
+                if (arch) addRow('Architectural control', arch);
+                if (amend) addRow('Amendment threshold', amend);
+                if (bsize) addRow('Board size', bsize);
+              }
+
+              // Classification
+              var ctype = p.hoa_type ? String(p.hoa_type) : null;
+              var mrel = p.master_relationship ? String(p.master_relationship) : null;
+              var parent = p.parent_master ? String(p.parent_master) : null;
+              if (ctype || mrel || parent) {
+                if (ctype) addRow('HOA type', ctype);
+                if (mrel) addRow('Master relationship', mrel);
+                if (parent) addRow('Parent master', parent);
+              }
+              var docs = getDocumentsList(p);
+              if (docs.length) {
+                var docFrag = document.createDocumentFragment();
+                docs.forEach(function (d) {
+                  var span = document.createElement("span");
+                  span.className = "doc-links";
+                  var parts = [];
+                  if (!isMissing(d.url)) {
+                    var a = document.createElement("a");
+                    a.href = d.url;
+                    a.textContent = d.type + " (URL)";
+                    a.target = "_blank";
+                    a.rel = "noopener noreferrer";
+                    parts.push(a);
+                  }
+                  if (!isMissing(d.pdf)) {
+                    var pdfLink = document.createElement("a");
+                    pdfLink.href = d.pdf;
+                    pdfLink.textContent = d.type + " (PDF)";
+                    pdfLink.target = "_blank";
+                    pdfLink.rel = "noopener noreferrer";
+                    parts.push(pdfLink);
+                  }
+                  if (parts.length) {
+                    span.appendChild(parts[0]);
+                    for (var i = 1; i < parts.length; i++) {
+                      span.appendChild(document.createTextNode(" · "));
+                      span.appendChild(parts[i]);
+                    }
+                    var div = document.createElement("div");
+                    div.appendChild(span);
+                    docFrag.appendChild(div);
+                  }
+                });
+                if (docFrag.childNodes.length) {
+                  addRow("Documents", docFrag);
+                } else {
+                  addRow("Documents", "None");
+                }
+              } else {
+                addRow("Documents", "None");
+              }
+              var lastAt = p.last_edited_at || p.last_updated;
+              var lastBy = p.last_edited_by || p.editor;
+              if (lastAt || lastBy) {
+                var lastStr = [lastAt ? formatDateTime(lastAt) : '', lastBy ? lastBy : ''].filter(Boolean).join(' by ');
+                addRow("Last edited", lastStr);
+              } else {
+                addRow("Last edited", "Not recorded");
+              }
+            }
+            function formatDateTime(isoStr) {
+              if (!isoStr) return '';
+              try {
+                var d = new Date(isoStr);
+                if (isNaN(d.getTime())) return isoStr;
+                return d.toLocaleString(undefined, { dateStyle: 'short', timeStyle: 'short' });
+              } catch (e) { return isoStr; }
+            }
+
+            function appendEditHistoryBlock(container, p) {
+              var hist = p.edit_history && Array.isArray(p.edit_history) ? p.edit_history : [];
+              var div = document.createElement("div");
+              div.className = "summary-edit-history";
+              var h4 = document.createElement("h4");
+              h4.textContent = "Edit history";
+              div.appendChild(h4);
+              if (hist.length === 0) {
+                var none = document.createElement("p");
+                none.className = "edit-history-none";
+                none.textContent = "No edits recorded yet.";
+                div.appendChild(none);
+              } else {
+                var list = document.createElement("ul");
+                list.className = "edit-history-list";
+                hist.slice().reverse().slice(0, 10).forEach(function (entry) {
+                  var li = document.createElement("li");
+                  li.textContent = (entry.at ? formatDateTime(entry.at) : '') + (entry.by ? ' — ' + entry.by : '') + (entry.summary ? ': ' + entry.summary : '');
+                  list.appendChild(li);
+                });
+                if (hist.length > 10) {
+                  var more = document.createElement("li");
+                  more.textContent = "… " + (hist.length - 10) + " earlier";
+                  list.appendChild(more);
+                }
+                div.appendChild(list);
+              }
+              container.appendChild(div);
+            }
+
+            function appendCommentsBlock(container, p, feature) {
+              var comments = p.comments && Array.isArray(p.comments) ? p.comments : [];
+              var div = document.createElement("div");
+              div.className = "summary-comments";
+              var h4 = document.createElement("h4");
+              h4.textContent = "Comments";
+              div.appendChild(h4);
+              var listWrap = document.createElement("div");
+              listWrap.className = "comments-list";
+              comments.forEach(function (c) {
+                var entry = document.createElement("div");
+                entry.className = "comment-entry";
+                entry.setAttribute("data-comment-id", c.id || '');
+                var meta = document.createElement("div");
+                meta.className = "comment-meta";
+                meta.textContent = (c.by || 'Anonymous') + ' · ' + (c.at ? formatDateTime(c.at) : '');
+                entry.appendChild(meta);
+                var text = document.createElement("p");
+                text.className = "comment-text";
+                text.textContent = c.text || '';
+                entry.appendChild(text);
+                var votes = document.createElement("div");
+                votes.className = "comment-votes";
+                var upBtn = document.createElement("button");
+                upBtn.type = "button";
+                upBtn.className = "comment-vote-btn";
+                upBtn.textContent = "↑ " + (c.up != null ? c.up : 0);
+                upBtn.addEventListener("click", function () {
+                  if (c.up == null) c.up = 0;
+                  c.up++;
+                  buildSummaryLabel([feature]);
+                });
+                var downBtn = document.createElement("button");
+                downBtn.type = "button";
+                downBtn.className = "comment-vote-btn";
+                downBtn.textContent = "↓ " + (c.down != null ? c.down : 0);
+                downBtn.addEventListener("click", function () {
+                  if (c.down == null) c.down = 0;
+                  c.down++;
+                  buildSummaryLabel([feature]);
+                });
+                votes.appendChild(upBtn);
+                votes.appendChild(downBtn);
+                entry.appendChild(votes);
+                listWrap.appendChild(entry);
+              });
+              div.appendChild(listWrap);
+              var addWrap = document.createElement("div");
+              addWrap.className = "comment-add";
+              var textarea = document.createElement("textarea");
+              textarea.placeholder = "Add a comment (saved in this session only until backend is connected)…";
+              textarea.rows = 2;
+              textarea.className = "comment-add-text";
+              var addBtn = document.createElement("button");
+              addBtn.type = "button";
+              addBtn.textContent = "Post comment";
+              addBtn.addEventListener("click", function () {
+                var t = textarea.value.trim();
+                if (!t) return;
+                var user = getCurrentUser();
+                if (!p.comments) p.comments = [];
+                p.comments.push({ id: simpleId(), at: new Date().toISOString(), by: user.username, text: t, up: 0, down: 0 });
+                textarea.value = '';
+                buildSummaryLabel([feature]);
+              });
+              addWrap.appendChild(textarea);
+              addWrap.appendChild(addBtn);
+              div.appendChild(addWrap);
+              container.appendChild(div);
+            }
+
+            // Monthly equivalent for aggregate (quarterly/3, annually/12)
+            function monthlyEquivalent(fees, period) {
+              if (fees == null) return null;
+              if (period === "Monthly") return fees;
+              if (period === "Quarterly") return fees / 3;
+              if (period === "Annually") return fees / 12;
+              return null;
+            }
+
+            // build HTML for summary label (single feature or array for overlapping HOAs)
+            function buildSummaryLabel(featuresAtPoint) {
+              var isArray = Array.isArray(featuresAtPoint);
+              var features = isArray ? featuresAtPoint : [featuresAtPoint];
+              var summary = document.getElementById("summaryLabel");
+              summary.innerHTML = "";
+
+              function addRow(table, label, valueNodeOrString) {
+                var tr = document.createElement("tr");
+                var th = document.createElement("th");
+                th.textContent = label;
+                var td = document.createElement("td");
+                if (typeof valueNodeOrString === "string") td.textContent = valueNodeOrString;
+                else td.appendChild(valueNodeOrString);
+                tr.appendChild(th); tr.appendChild(td);
+                table.appendChild(tr);
+              }
+
+              if (features.length === 0) return;
+
+              if (features.length === 1) {
+                var p = features[0].properties;
+                var name = !isMissing(p.hoa_name) ? p.hoa_name : "Unnamed HOA";
+                var h2 = document.createElement("h2");
+                h2.textContent = name;
+                summary.appendChild(h2);
+                var table = document.createElement("table");
+                addHoaRowsToTable(table, p, function (label, val) { addRow(table, label, val); });
+                summary.appendChild(table);
+                appendEditHistoryBlock(summary, p);
+                appendCommentsBlock(summary, p, features[0]);
+              } else {
+                var h2 = document.createElement("h2");
+                h2.textContent = features.length + " HOAs at this location";
+                summary.appendChild(h2);
+                var totalMonthly = 0;
+                var feeParts = [];
+                var aggFeeCov = {};
+                var aggMemberResp = {};
+                for (var i = 0; i < features.length; i++) {
+                  var f = features[i];
+                  var fp = f.properties;
+                  var section = document.createElement("div");
+                  section.className = "hoa-summary-block";
+                  var h3 = document.createElement("h3");
+                  h3.textContent = (i + 1) + ". " + (!isMissing(fp.hoa_name) ? fp.hoa_name : "Unnamed HOA");
+                  section.appendChild(h3);
+                  var table = document.createElement("table");
+                  addHoaRowsToTable(table, fp, function (label, val) { addRow(table, label, val); });
+                  section.appendChild(table);
+                  summary.appendChild(section);
+                  var me = monthlyEquivalent(fp.hoa_fees, fp.fees_period);
+                  if (me != null) {
+                    totalMonthly += me;
+                    feeParts.push((fp.hoa_name || "Unnamed") + ": $" + (fp.hoa_fees) + " " + (fp.fees_period || ""));
+                  }
+                  (fp.fee_coverage || []).forEach(function (t) { aggFeeCov[t] = true; });
+                  (fp.member_responsibilities || []).forEach(function (t) { aggMemberResp[t] = true; });
+                }
+                var aggDiv = document.createElement("div");
+                aggDiv.className = "hoa-aggregate";
+                var aggTitle = document.createElement("h3");
+                aggTitle.textContent = "At this location (aggregate)";
+                aggDiv.appendChild(aggTitle);
+                var aggP = document.createElement("p");
+                if (totalMonthly > 0) {
+                  aggP.innerHTML = "<strong>Total monthly equivalent:</strong> $" + Math.round(totalMonthly * 100) / 100 + "/month.";
+                  if (feeParts.length > 1) {
+                    aggP.innerHTML += " <span class=\"agg-breakdown\">(" + feeParts.join("; ") + ")</span>";
+                  }
+                } else {
+                  aggP.textContent = "Fee information not available for all HOAs at this point.";
+                }
+                aggDiv.appendChild(aggP);
+                var aggFeeKeys = Object.keys(aggFeeCov).sort();
+                var aggRespKeys = Object.keys(aggMemberResp).sort();
+                if (aggFeeKeys.length || aggRespKeys.length) {
+                  var aggTable = document.createElement("table");
+                  if (aggFeeKeys.length) {
+                    var feeRow = document.createElement("tr");
+                    feeRow.innerHTML = "<th>Fee covers (at this location)</th>";
+                    var feeTd = document.createElement("td");
+                    var feeWrap = document.createElement("span");
+                    feeWrap.className = "fee-coverage-tags";
+                    aggFeeKeys.forEach(function (tag) {
+                      var sp = document.createElement("span");
+                      sp.className = "fee-coverage-tag";
+                      sp.textContent = tag;
+                      feeWrap.appendChild(sp);
+                    });
+                    feeTd.appendChild(feeWrap);
+                    feeRow.appendChild(feeTd);
+                    aggTable.appendChild(feeRow);
+                  }
+                  if (aggRespKeys.length) {
+                    var respRow = document.createElement("tr");
+                    respRow.innerHTML = "<th>Member responsibilities (at this location)</th>";
+                    var respTd = document.createElement("td");
+                    var respWrap = document.createElement("span");
+                    respWrap.className = "member-responsibility-tags";
+                    aggRespKeys.forEach(function (tag) {
+                      var sp = document.createElement("span");
+                      sp.className = "member-responsibility-tag";
+                      sp.textContent = tag;
+                      respWrap.appendChild(sp);
+                    });
+                    respTd.appendChild(respWrap);
+                    respRow.appendChild(respTd);
+                    aggTable.appendChild(respRow);
+                  }
+                  aggDiv.appendChild(aggTable);
+                }
+                summary.appendChild(aggDiv);
+              }
+
+              // Edit buttons only when exactly one HOA is selected
+              if (features.length === 1) {
+                var btnWrap = document.createElement("p");
+                btnWrap.className = "edit-buttons";
+                var btnDetails = document.createElement("button");
+                btnDetails.type = "button";
+                btnDetails.textContent = "Edit details";
+                btnDetails.onclick = function () { startEditDetails(); };
+                var btnShape = document.createElement("button");
+                btnShape.type = "button";
+                btnShape.textContent = "Edit shape";
+                btnShape.onclick = function () { startEditShape(); };
+                var btnDocs = document.createElement("button");
+                btnDocs.type = "button";
+                btnDocs.textContent = "View documents";
+                btnDocs.onclick = function () { openDocumentsForFeature(features[0]); };
+                btnWrap.appendChild(btnDetails);
+                  btnWrap.appendChild(btnShape);
+                  btnWrap.appendChild(btnDocs);
+                summary.appendChild(btnWrap);
+              }
+            }
+
+
+            // find all HOA features whose polygon contains the given point
+            function getFeaturesAtPoint(latlng) {
+              var out = [];
+              if (!hoaLayer) return out;
+              hoaLayer.eachLayer(function (layer) {
+                var ring = layer.getLatLngs && layer.getLatLngs()[0];
+                if (ring && pointInPolygon(latlng, ring)) {
+                  if (layer._hoaFeature) out.push({ feature: layer._hoaFeature, layer: layer });
+                }
+              });
+              return out;
+            }
+
+            function compareKeyFromFeature(f) {
+              var p = f.properties || {};
+              if (p.fid != null) return 'fid_' + p.fid;
+              if (p.id != null) return 'id_' + p.id;
+              if (p.hoa_name) return 'name_' + String(p.hoa_name);
+              return 'anon_' + (f.geometry && f.geometry.coordinates ? JSON.stringify(f.geometry.coordinates[0] && f.geometry.coordinates[0][0]) : Math.random());
+            }
+
+            function findLayerForFeature(feature) {
+              var found = null;
+              if (!hoaLayer) return null;
+              hoaLayer.eachLayer(function (layer) {
+                if (layer._hoaFeature === feature) found = layer;
+              });
+              return found;
+            }
+
+            function comparisonHasKey(key) {
+              return comparisonEntries.some(function (e) { return compareKeyFromFeature(e.feature) === key; });
+            }
+
+            function refreshComparisonLayerStyles() {
+              if (!hoaLayer) return;
+              comparisonEntries.forEach(function (entry) {
+                var layer = entry.layer;
+                if (layer && layer.setStyle) {
+                  var inSelection = selection.indexOf(layer) !== -1;
+                  if (inSelection) return;
+                  layer.setStyle({
+                    color: '#00695C',
+                    fillColor: '#4DB6AC',
+                    fillOpacity: 0.55,
+                    weight: 3
+                  });
+                }
+              });
+            }
+
+            function showPolicyComparePanel() {
+              var panel = document.getElementById('policyComparePanel');
+              if (panel) {
+                panel.style.display = 'block';
+                panel.classList.remove('policy-compare-collapsed');
+                var btn = document.getElementById('policyCompareCollapse');
+                if (btn) {
+                  btn.setAttribute('aria-expanded', 'true');
+                  btn.textContent = '▼';
+                }
+              }
+            }
+
+            function hidePolicyComparePanel() {
+              var panel = document.getElementById('policyComparePanel');
+              if (panel) panel.style.display = 'none';
+            }
+
+            function closePolicyComparePanel() {
+              comparisonEntries.forEach(function (entry) {
+                if (entry.layer && hoaLayer) hoaLayer.resetStyle(entry.layer);
+              });
+              comparisonEntries = [];
+              hidePolicyComparePanel();
+            }
+
+            function removeComparisonAt(index) {
+              if (index < 0 || index >= comparisonEntries.length) return;
+              var removed = comparisonEntries.splice(index, 1)[0];
+              if (removed && removed.layer && hoaLayer) hoaLayer.resetStyle(removed.layer);
+              if (comparisonEntries.length < 2) {
+                comparisonEntries.forEach(function (e) {
+                  if (e.layer && hoaLayer) hoaLayer.resetStyle(e.layer);
+                });
+                comparisonEntries = [];
+                hidePolicyComparePanel();
+              } else {
+                renderPolicyCompareTable();
+              }
+              refreshComparisonLayerStyles();
+            }
+
+            function getMemberResponsibilityList(p) {
+              if (!p) return [];
+              if (p.member_responsibilities && Array.isArray(p.member_responsibilities) && p.member_responsibilities.length)
+                return p.member_responsibilities;
+              if (p.member_responsibility && Array.isArray(p.member_responsibility)) return p.member_responsibility;
+              return [];
+            }
+
+            function notReportedNode() {
+              var s = document.createElement('span');
+              s.className = 'policy-compare-muted';
+              s.textContent = 'Not reported';
+              return s;
+            }
+
+            function renderPolicyCompareTable() {
+              var wrap = document.getElementById('policyCompareTableWrap');
+              if (!wrap) return;
+              wrap.innerHTML = '';
+              if (comparisonEntries.length < 2) return;
+
+              var table = document.createElement('table');
+              table.className = 'policy-compare-table';
+              var thead = document.createElement('thead');
+              var hr = document.createElement('tr');
+              var th0 = document.createElement('th');
+              th0.className = 'policy-compare-corner';
+              th0.textContent = '';
+              hr.appendChild(th0);
+              comparisonEntries.forEach(function (entry, colIdx) {
+                var th = document.createElement('th');
+                th.className = 'policy-compare-col-head';
+                var headWrap = document.createElement('div');
+                headWrap.className = 'policy-compare-col-head-inner';
+                var nameSpan = document.createElement('span');
+                nameSpan.className = 'policy-compare-hoa-name';
+                var p = entry.feature.properties || {};
+                nameSpan.textContent = !isMissing(p.hoa_name) ? p.hoa_name : 'Unnamed HOA';
+                var rm = document.createElement('button');
+                rm.type = 'button';
+                rm.className = 'policy-compare-remove';
+                rm.setAttribute('aria-label', 'Remove from comparison');
+                rm.textContent = '×';
+                (function (idx) {
+                  rm.onclick = function () { removeComparisonAt(idx); };
+                })(colIdx);
+                headWrap.appendChild(nameSpan);
+                headWrap.appendChild(rm);
+                th.appendChild(headWrap);
+                hr.appendChild(th);
+              });
+              thead.appendChild(hr);
+              table.appendChild(thead);
+
+              function addRow(label, cellFns) {
+                var tr = document.createElement('tr');
+                var td0 = document.createElement('td');
+                td0.className = 'policy-compare-row-label';
+                td0.textContent = label;
+                tr.appendChild(td0);
+                for (var c = 0; c < cellFns.length; c++) {
+                  var td = document.createElement('td');
+                  td.className = 'policy-compare-cell';
+                  var node = cellFns[c]();
+                  td.appendChild(node);
+                  tr.appendChild(td);
+                }
+                table.appendChild(tr);
+              }
+
+              var rows = [
+                {
+                  label: 'HOA type',
+                  val: function (p) {
+                    if (isMissing(p.hoa_type)) return notReportedNode();
+                    var t = document.createTextNode(String(p.hoa_type));
+                    var span = document.createElement('span');
+                    span.appendChild(t);
+                    return span;
+                  }
+                },
+                {
+                  label: 'HOA fees',
+                  val: function (p) {
+                    if (p.hoa_fees == null || isMissing(p.fees_period)) return notReportedNode();
+                    var span = document.createElement('span');
+                    span.textContent = '$' + p.hoa_fees + ' ' + p.fees_period;
+                    return span;
+                  }
+                },
+                {
+                  label: 'Fee coverage',
+                  val: function (p) {
+                    var fc = p.fee_coverage && Array.isArray(p.fee_coverage) ? p.fee_coverage : [];
+                    if (!fc.length) return notReportedNode();
+                    var wrapTags = document.createElement('span');
+                    wrapTags.className = 'fee-coverage-tags';
+                    fc.forEach(function (tag) {
+                      var sp = document.createElement('span');
+                      sp.className = 'fee-coverage-tag';
+                      sp.textContent = tag;
+                      wrapTags.appendChild(sp);
+                    });
+                    return wrapTags;
+                  }
+                },
+                {
+                  label: 'Pets allowed',
+                  val: function (p) {
+                    if (p.pets_allowed !== undefined && p.pets_allowed !== null) {
+                      var s = document.createElement('span');
+                      s.textContent = String(p.pets_allowed);
+                      return s;
+                    }
+                    return notReportedNode();
+                  }
+                },
+                {
+                  label: 'Rentals allowed',
+                  val: function (p) {
+                    if (p.rentals_allowed !== undefined && p.rentals_allowed !== null) {
+                      var s = document.createElement('span');
+                      s.textContent = String(p.rentals_allowed);
+                      return s;
+                    }
+                    return notReportedNode();
+                  }
+                },
+                {
+                  label: 'Short-term rentals',
+                  val: function (p) {
+                    if (p.short_term_allowed !== undefined && p.short_term_allowed !== null) {
+                      var s = document.createElement('span');
+                      s.textContent = String(p.short_term_allowed);
+                      return s;
+                    }
+                    return notReportedNode();
+                  }
+                },
+                {
+                  label: 'Min lease (days)',
+                  val: function (p) {
+                    if (p.min_lease_days == null || p.min_lease_days === '') return notReportedNode();
+                    var s = document.createElement('span');
+                    s.textContent = String(p.min_lease_days);
+                    return s;
+                  }
+                },
+                {
+                  label: 'Parking restrictions',
+                  val: function (p) {
+                    var park = p.parking_restrictions && String(p.parking_restrictions).trim();
+                    if (!park) return notReportedNode();
+                    var s = document.createElement('span');
+                    s.textContent = park;
+                    return s;
+                  }
+                },
+                {
+                  label: 'Amenities',
+                  val: function (p) {
+                    var amens = p.amenities && Array.isArray(p.amenities) ? p.amenities : [];
+                    if (!amens.length) return notReportedNode();
+                    var amWrap = document.createElement('span');
+                    amWrap.className = 'amenities-tags';
+                    amens.forEach(function (a) {
+                      var sp = document.createElement('span');
+                      sp.className = 'amenity-tag';
+                      sp.textContent = a;
+                      amWrap.appendChild(sp);
+                    });
+                    return amWrap;
+                  }
+                },
+                {
+                  label: 'Member responsibility',
+                  val: function (p) {
+                    var mr = getMemberResponsibilityList(p);
+                    if (!mr.length) return notReportedNode();
+                    var tagRow = document.createElement('span');
+                    tagRow.className = 'member-responsibility-tags';
+                    mr.forEach(function (r) {
+                      var sp = document.createElement('span');
+                      sp.className = 'member-responsibility-tag';
+                      sp.textContent = r;
+                      tagRow.appendChild(sp);
+                    });
+                    return tagRow;
+                  }
+                },
+                {
+                  label: 'Document count',
+                  val: function (p) {
+                    var n = getDocumentsList(p).length;
+                    var s = document.createElement('span');
+                    s.textContent = String(n);
+                    return s;
+                  }
+                }
+              ];
+
+              rows.forEach(function (row) {
+                var fns = comparisonEntries.map(function (entry) {
+                  return function () { return row.val(entry.feature.properties || {}); };
+                });
+                addRow(row.label, fns);
+              });
+
+              wrap.appendChild(table);
+            }
+
+            function addToComparison(feature, layer, prevSelected) {
+              var k = compareKeyFromFeature(feature);
+              if (comparisonEntries.length >= 3 && !comparisonHasKey(k)) {
+                return;
+              }
+              // When starting a comparison, seed the already-selected HOA so
+              // shift-clicking a "second" polygon immediately opens the panel.
+              // If the current point overlaps multiple HOAs, seed only the first
+              // (keeps the compare UI focused on two-to-three explicit picks).
+              if (comparisonEntries.length === 0 && prevSelected && prevSelected.length) {
+                var prev = prevSelected[0];
+                var prevKey = compareKeyFromFeature(prev);
+                if (prevKey !== k && !comparisonHasKey(prevKey)) {
+                  var prevLayer = findLayerForFeature(prev);
+                  comparisonEntries.push({ feature: prev, layer: prevLayer });
+                }
+              }
+              if (!comparisonHasKey(k)) {
+                if (comparisonEntries.length < 3) {
+                  comparisonEntries.push({ feature: feature, layer: layer });
+                }
+              }
+              if (comparisonEntries.length >= 2) {
+                showPolicyComparePanel();
+                renderPolicyCompareTable();
+              }
+              refreshComparisonLayerStyles();
+            }
+
+            // click behavior for HOAs (support overlapping: show all HOAs at click point)
+            function hoaOnEachFeature(feature, layer) {
+              layer._hoaFeature = feature;
+
+              var label = (feature.properties && feature.properties.hoa_name)
+                ? String(feature.properties.hoa_name)
+                : "";
+
+              if (label) {
+                var center = layer.getBounds().getCenter();
+                layer.bindTooltip(label, {
+                  permanent: true,
+                  direction: "center",
+                  className: "hoa-label",
+                  opacity: 0.9,
+                  interactive: false
+                });
+                layer.openTooltip(center);
+                if (map.getZoom() < LABEL_ZOOM_THRESHOLD) layer.closeTooltip();
+              }
+
+              layer.on({
+                click: function (e) {
+                  var prevSelected = selectedFeatures.slice();
+                  resetStyles();
+                  var latlng = e.latlng;
+                  var atPoint = getFeaturesAtPoint(latlng);
+                  var features = atPoint.map(function (x) { return x.feature; });
+                  var layers = atPoint.map(function (x) { return x.layer; });
+
+                  for (var i = 0; i < layers.length; i++) {
+                    layers[i].setStyle({
+                      color: '#FF00FF',
+                      fillColor: '#FFD700',
+                      fillOpacity: 1
+                    });
+                  }
+                  selection = layers;
+                  selectedFeatures = features;
+                  selectedFeature = features.length === 1 ? features[0] : null;
+                  buildSummaryLabel(features);
+                  if (e.originalEvent && e.originalEvent.shiftKey && features.length) {
+                    addToComparison(features[0], layers[0], prevSelected);
+                  }
+                  refreshComparisonLayerStyles();
+                  L.DomEvent.stopPropagation(e);
+                }
+              });
+            }
+
+            // get selected CC&R status filter values from checkboxes
+            function getSelectedStatuses() {
+              var out = { verified: false, cited: false, uncited: false, other: false };
+              if (document.getElementById('filter_status_verified').checked) out.verified = true;
+              if (document.getElementById('filter_status_cited').checked) out.cited = true;
+              if (document.getElementById('filter_status_uncited').checked) out.uncited = true;
+              if (document.getElementById('filter_status_other').checked) out.other = true;
+              return out;
+            }
+
+            function getSelectedFeeCoverageTags() {
+              var out = [];
+              var wrap = document.getElementById('filter_fee_coverage_wrap');
+              if (wrap) {
+                wrap.querySelectorAll('input[name=filter_fee_cov]:checked').forEach(function (cb) { out.push(cb.value); });
+              }
+              return out;
+            }
+
+            function getSelectedMemberRespTags() {
+              var out = [];
+              var wrap = document.getElementById('filter_member_resp_wrap');
+              if (wrap) {
+                wrap.querySelectorAll('input[name=filter_member_resp]:checked').forEach(function (cb) { out.push(cb.value); });
+              }
+              return out;
+            }
+
+            // Policy filter helpers
+            function getSelectedPets() {
+              return {
+                yes: !!(document.getElementById('filter_pets_yes') && document.getElementById('filter_pets_yes').checked),
+                no: !!(document.getElementById('filter_pets_no') && document.getElementById('filter_pets_no').checked),
+                restricted: !!(document.getElementById('filter_pets_restricted') && document.getElementById('filter_pets_restricted').checked)
+              };
+            }
+            function getSelectedRentals() {
+              return {
+                yes: !!(document.getElementById('filter_rentals_yes') && document.getElementById('filter_rentals_yes').checked),
+                no: !!(document.getElementById('filter_rentals_no') && document.getElementById('filter_rentals_no').checked),
+                restricted: !!(document.getElementById('filter_rentals_restricted') && document.getElementById('filter_rentals_restricted').checked)
+              };
+            }
+            function getSelectedShortTerm() {
+              return {
+                yes: !!(document.getElementById('filter_short_yes') && document.getElementById('filter_short_yes').checked),
+                no: !!(document.getElementById('filter_short_no') && document.getElementById('filter_short_no').checked)
+              };
+            }
+            function getSelectedAmenities() {
+              var out = [];
+              var wrap = document.getElementById('filter_amenities_wrap');
+              if (wrap) {
+                wrap.querySelectorAll('input[name=filter_amenity]:checked').forEach(function (cb) { out.push(cb.value); });
+              }
+              return out;
+            }
+
+            // Build amenity checkboxes dynamically from loaded GeoJSON
+            function buildAmenityFilter() {
+              var wrap = document.getElementById('filter_amenities_wrap');
+              if (!wrap) return;
+              // If already populated, don't rebuild unless data changed
+              if (wrap.innerHTML && wrap.innerHTML.trim() !== '') return;
+              var seen = {};
+              if (allHoaFeatures && Array.isArray(allHoaFeatures.features)) {
+                allHoaFeatures.features.forEach(function (f) {
+                  var a = f.properties && f.properties.amenities;
+                  if (Array.isArray(a)) a.forEach(function (v) { if (v && String(v).trim()) seen[String(v).trim()] = true; });
+                });
+              }
+              var keys = Object.keys(seen).sort();
+              keys.forEach(function (opt) {
+                var label = document.createElement('label');
+                label.className = 'filter-tag-label';
+                var cb = document.createElement('input');
+                cb.type = 'checkbox';
+                cb.name = 'filter_amenity';
+                cb.value = opt;
+                label.appendChild(cb);
+                label.appendChild(document.createTextNode(' ' + opt));
+                wrap.appendChild(label);
+              });
+              // wire change
+              wrap.addEventListener('change', applyFilterAndDraw);
+            }
+
+            // true if feature would pass current status + fee coverage + member responsibility filters (used for styling: non-matching get outline only)
+            function featureMatchesCurrentFilter(f) {
+              var p = f.properties || {};
+              var sel = getSelectedStatuses();
+              var feeTags = getSelectedFeeCoverageTags();
+              var respTags = getSelectedMemberRespTags();
+              var known = ["CC&R Verified", "CC&R Cited", "Uncited"];
+              var s = p.status;
+              var statusOk = (sel.verified && s === "CC&R Verified") || (sel.cited && s === "CC&R Cited") ||
+                (sel.uncited && s === "Uncited") || (sel.other && (s == null || known.indexOf(s) === -1));
+              if (!statusOk) return false;
+              var fc = p.fee_coverage && Array.isArray(p.fee_coverage) ? p.fee_coverage : [];
+              var hasAllFeeTags = feeTags.length === 0 || feeTags.every(function (t) { return fc.indexOf(t) !== -1; });
+              if (!hasAllFeeTags) return false;
+              var mr = p.member_responsibilities && Array.isArray(p.member_responsibilities) ? p.member_responsibilities : [];
+              var hasAllRespTags = respTags.length === 0 || respTags.every(function (t) { return mr.indexOf(t) !== -1; });
+              if (!hasAllRespTags) return false;
+
+              // Pets filter
+              var petSel = getSelectedPets();
+              if (!(petSel.yes || petSel.no || petSel.restricted)) {
+                // no pet filter selected -> pass
+              } else {
+                var petVal = p.pets_allowed;
+                if (petVal === null || petVal === undefined) petVal = (p.pets_restrictions ? 'restricted' : null);
+                if (typeof petVal === 'boolean') petVal = petVal ? 'yes' : 'no';
+                petVal = petVal ? String(petVal).trim().toLowerCase() : null;
+                var petOk = false;
+                if (petVal === 'yes' && petSel.yes) petOk = true;
+                if (petVal === 'no' && petSel.no) petOk = true;
+                if ((petVal === 'restricted' || (p.pets_restrictions && String(p.pets_restrictions).trim())) && petSel.restricted) petOk = true;
+                if (!petOk) return false;
+              }
+
+              // Rentals filter
+              var rentSel = getSelectedRentals();
+              if (!(rentSel.yes || rentSel.no || rentSel.restricted)) {
+                // no rental filter selected -> pass
+              } else {
+                var rentVal = p.rentals_allowed;
+                if (rentVal === null || rentVal === undefined) rentVal = (p.short_term_allowed ? 'yes' : null);
+                if (typeof rentVal === 'boolean') rentVal = rentVal ? 'yes' : 'no';
+                rentVal = rentVal ? String(rentVal).trim().toLowerCase() : null;
+                var rentOk = false;
+                if (rentVal === 'yes' && rentSel.yes) rentOk = true;
+                if (rentVal === 'no' && rentSel.no) rentOk = true;
+                if ((rentVal === 'restricted' || (p.rentals_restrictions && String(p.rentals_restrictions).trim())) && rentSel.restricted) rentOk = true;
+                if (!rentOk) return false;
+              }
+
+              // Short-term rental filter
+              var shortSel = getSelectedShortTerm();
+              if (!(shortSel.yes || shortSel.no)) {
+                // no short-term filter selected -> pass
+              } else {
+                var shortVal = p.short_term_allowed;
+                if (typeof shortVal === 'boolean') shortVal = shortVal ? 'yes' : 'no';
+                shortVal = shortVal ? String(shortVal).trim().toLowerCase() : null;
+                if (shortSel.yes && shortVal === 'yes') {
+                  // ok
+                } else if (shortSel.no && shortVal === 'no') {
+                  // ok
+                } else if (!(shortSel.yes || shortSel.no)) {
+                  // no filter
+                } else {
+                  // if shortVal is null treat as not matching when specific selection present
+                  return false;
+                }
+              }
+
+              // Amenities (must include all selected amenity tags)
+              var amenSel = getSelectedAmenities();
+              if (amenSel.length > 0) {
+                var am = p.amenities && Array.isArray(p.amenities) ? p.amenities : [];
+                var hasAll = amenSel.every(function (t) { return am.indexOf(t) !== -1; });
+                if (!hasAll) return false;
+              }
+
+              return true;
+            }
+
+
+            // draw all HOAs; style uses filters to show matching = fill, non-matching = outline only
+            function applyFilterAndDraw() {
+              if (!allHoaFeatures || !allHoaFeatures.features) return;
+              comparisonEntries = [];
+              hidePolicyComparePanel();
+              var fc = { type: "FeatureCollection", features: allHoaFeatures.features };
+              if (hoaLayer) map.removeLayer(hoaLayer);
+              selection = [];
+              selectedFeatures = [];
+              selectedFeature = null;
+              document.getElementById('summaryLabel').innerHTML =
+                '<p>Click on an HOA on the map to get more information.</p>' +
+                '<p>To propose an unlisted HOA, click the pentagon button on the upper-left side of the map.</p>';
+              var sym = (document.getElementById('symbologySelect') && document.getElementById('symbologySelect').value) || 'status';
+              var styleFn = sym === 'fee' ? hoaStyleByFee : hoaStyle;
+              hoaLayer = L.geoJSON(fc, {
+                style: styleFn,
+                onEachFeature: hoaOnEachFeature
+              }).addTo(map);
+              updateLegendContent();
+            }
+
+            // load GeoJSON from URL, store in allHoaFeatures, apply filters and draw (used on init and refresh)
+            function loadHoaData() {
+              return fetch(DATA_URL)
+                .then(function (response) { return response.json(); })
+                .then(function (data) {
+                  allHoaFeatures = data;
+                  if (allHoaFeatures.features) {
+                    allHoaFeatures.features.forEach(function (f) {
+                      if (f.properties) {
+                        ensureDocuments(f.properties);
+                        if (!Array.isArray(f.properties.fee_coverage)) f.properties.fee_coverage = [];
+                        if (!Array.isArray(f.properties.member_responsibilities)) f.properties.member_responsibilities = [];
+                        if (f.properties.member_responsibilities.length === 0 && Array.isArray(f.properties.member_responsibility)) {
+                          f.properties.member_responsibilities = f.properties.member_responsibility.slice();
+                        }
+                        if (f.properties.member_responsibilities_notes === undefined) f.properties.member_responsibilities_notes = null;
+                        if (!Array.isArray(f.properties.edit_history)) f.properties.edit_history = [];
+                        if (!Array.isArray(f.properties.comments)) f.properties.comments = [];
+                        if (f.properties.last_edited_at === undefined) f.properties.last_edited_at = f.properties.last_updated || null;
+                        if (f.properties.last_edited_by === undefined) f.properties.last_edited_by = f.properties.editor || null;
+                      }
+                    });
+                  }
+                  try { buildAmenityFilter(); } catch (e) { /* ignore */ }
+                  applyFilterAndDraw();
+                })
+                .catch(function (err) {
+                  document.getElementById("test_output").innerHTML = err.message || String(err);
+                });
+            }
+
+            // one-time zoomend: show/hide labels by zoom (uses current hoaLayer)
+            map.on("zoomend", function () {
+              if (!hoaLayer) return;
+              var z = map.getZoom();
+              hoaLayer.eachLayer(function (layer) {
+                var tooltip = layer.getTooltip();
+                if (!tooltip) return;
+                if (z >= LABEL_ZOOM_THRESHOLD) {
+                  layer.openTooltip(layer.getBounds().getCenter());
+                } else {
+                  layer.closeTooltip();
+                }
+              });
+            });
+
+            // initial load
+            loadHoaData();
+
+            loadProfileIntoForm();
+            var profileSaveBtn = document.getElementById('profileSave');
+            if (profileSaveBtn) {
+              profileSaveBtn.addEventListener('click', function () {
+                var o = {
+                  username: document.getElementById('profile_username').value.trim(),
+                  flair: document.getElementById('profile_flair').value || '',
+                  is_hoa_member: document.getElementById('profile_hoa_member').checked,
+                  hoa_name: document.getElementById('profile_hoa_name').value.trim()
+                };
+                setUserProfile(o);
+                var btn = document.getElementById('profileSave');
+                if (btn) { var t = btn.textContent; btn.textContent = 'Saved'; setTimeout(function () { btn.textContent = t; }, 1500); }
+              });
+            }
+
+            // wire filter checkboxes to redraw
+            ['filter_status_verified', 'filter_status_cited', 'filter_status_uncited', 'filter_status_other'].forEach(function (id) {
+              var el = document.getElementById(id);
+              if (el) el.addEventListener('change', applyFilterAndDraw);
+            });
+            // wire policy filter checkboxes
+            ['filter_pets_yes','filter_pets_no','filter_pets_restricted',
+             'filter_rentals_yes','filter_rentals_no','filter_rentals_restricted',
+             'filter_short_yes','filter_short_no'].forEach(function (id) {
+              var el = document.getElementById(id);
+              if (el) el.addEventListener('change', applyFilterAndDraw);
+            });
+            var symSelect = document.getElementById('symbologySelect');
+            if (symSelect) symSelect.addEventListener('change', applyFilterAndDraw);
+            var showFillsEl = document.getElementById('filter_show_fills');
+            if (showFillsEl) showFillsEl.addEventListener('change', applyFilterAndDraw);
+
+            // build filter-by-tag checkboxes (fee coverage and member responsibilities)
+            var feeWrap = document.getElementById('filter_fee_coverage_wrap');
+            if (feeWrap && feeWrap.innerHTML === '') {
+              FEE_COVERAGE_OPTIONS.forEach(function (opt) {
+                var label = document.createElement('label');
+                label.className = 'filter-tag-label';
+                var cb = document.createElement('input');
+                cb.type = 'checkbox';
+                cb.name = 'filter_fee_cov';
+                cb.value = opt;
+                label.appendChild(cb);
+                label.appendChild(document.createTextNode(' ' + opt));
+                feeWrap.appendChild(label);
+              });
+            }
+            var respWrap = document.getElementById('filter_member_resp_wrap');
+            if (respWrap && respWrap.innerHTML === '') {
+              MEMBER_RESPONSIBILITY_OPTIONS.forEach(function (opt) {
+                var label = document.createElement('label');
+                label.className = 'filter-tag-label';
+                var cb = document.createElement('input');
+                cb.type = 'checkbox';
+                cb.name = 'filter_member_resp';
+                cb.value = opt;
+                label.appendChild(cb);
+                label.appendChild(document.createTextNode(' ' + opt));
+                respWrap.appendChild(label);
+              });
+            }
+            (function () {
+              var w = document.getElementById('filter_fee_coverage_wrap');
+              if (w) w.addEventListener('change', applyFilterAndDraw);
+              w = document.getElementById('filter_member_resp_wrap');
+              if (w) w.addEventListener('change', applyFilterAndDraw);
+            })();
+
+            // Refresh data button
+            var refreshBtn = document.getElementById('refreshDataBtn');
+            if (refreshBtn) refreshBtn.addEventListener('click', function () { loadHoaData(); });
+
+            // Auto-refresh dropdown: run loadHoaData on interval or clear
+            var autoRefreshSelect = document.getElementById('autoRefreshSelect');
+            if (autoRefreshSelect) {
+              autoRefreshSelect.addEventListener('change', function () {
+                if (refreshIntervalId) { clearInterval(refreshIntervalId); refreshIntervalId = null; }
+                var mins = parseInt(this.value, 10);
+                if (mins > 0) {
+                  refreshIntervalId = setInterval(function () { loadHoaData(); }, mins * 60 * 1000);
+                }
+              });
+            }
+
+            // click on empty map clears selection
+            map.on('click', function () {
+            if (selection.length) {
+                resetStyles();
+                closePolicyComparePanel();
+                selectedFeatures = [];
+                selectedFeature = null;
+                document.getElementById('editDetailsPanel').style.display = 'none';
+                document.getElementById('summaryLabel').innerHTML =
+                '<p>Click on an HOA on the map to get more information.</p>' +
+                '<p>To propose an unlisted HOA, click the pentagon button on the upper-left side of the map.</p>';
+            }
+            });
+
+            // -----------------------------
+            // VGI: drawing controls
+            // -----------------------------
+            drawnItems = new L.FeatureGroup();
+            map.addLayer(drawnItems);
+
+            var drawControl = new L.Control.Draw({
+            edit: {
+                featureGroup: drawnItems
+            },
+            draw: {
+                polygon: {
+                allowIntersection: false,   // allows overlap with other HOAs, but not self-crossing
+                showArea: true
+                },
+                polyline: false,
+                rectangle: false,
+                circle: false,
+                marker: false,
+                circlemarker: false
+            }
+            });
+            map.addControl(drawControl);
+
+            // when user finishes drawing a polygon
+            map.on(L.Draw.Event.CREATED, function (e) {
+            var layer = e.layer;
+            vgiDocPdfs = {};
+
+            // store geometry in GeoJSON form for later use
+            pendingGeom = layer.toGeoJSON().geometry;
+
+            // style the drawn polygon
+            if (layer.setStyle) {
+                layer.setStyle({
+                color: '#555555',
+                weight: 2,
+                dashArray: '4,4',
+                fillOpacity: 0.1
+                });
+            }
+            drawnItems.addLayer(layer);
+
+            // reveal the VGI form panel
+            document.getElementById('vgiPanel').style.display = 'block';
+            });
+
+            // VGI submit function (global so the button can call it)
+            window.submitVgi = function () {
+            if (!pendingGeom) {
+                alert('Draw a polygon on the map first.');
+                return;
+            }
+
+            var name   = document.getElementById('vgi_hoa_name').value.trim();
+            var status = document.getElementById('vgi_status').value;
+            var fees   = document.getElementById('vgi_fees').value.trim();
+            var period = document.getElementById('vgi_fees_period').value;
+            var notes  = document.getElementById('vgi_notes').value.trim();
+
+            var documents = [];
+            DOCUMENT_TYPES.forEach(function (type) {
+              var slug = DOC_TYPE_SLUG[type];
+              var urlEl = document.getElementById('vgi_doc_' + slug + '_url');
+              var url = (urlEl && urlEl.value.trim()) || null;
+              var pdf = vgiDocPdfs[slug] || null;
+              if (url || pdf) documents.push({ type: type, url: url, pdf: pdf });
+            });
+            var ccrDoc = documents.filter(function (d) { return d.type === "CC&R"; })[0];
+            var ccr_url = (ccrDoc && ccrDoc.url) || null;
+
+            var feeCoverage = [];
+            document.querySelectorAll('input[name=vgi_fee_cov]:checked').forEach(function (cb) { feeCoverage.push(cb.value); });
+            var vgiFeeOther = document.getElementById('vgi_fee_coverage_other');
+            if (vgiFeeOther && vgiFeeOther.value.trim()) feeCoverage.push(vgiFeeOther.value.trim());
+            var memberResp = [];
+            document.querySelectorAll('input[name=vgi_member_resp]:checked').forEach(function (cb) { memberResp.push(cb.value); });
+            var vgiRespOther = document.getElementById('vgi_member_resp_other');
+            if (vgiRespOther && vgiRespOther.value.trim()) memberResp.push(vgiRespOther.value.trim());
+            var vgiRespNotes = document.getElementById('vgi_member_resp_notes');
+            var memberRespNotes = (vgiRespNotes && vgiRespNotes.value.trim()) || null;
+
+            var feature = {
+                type: "Feature",
+                geometry: pendingGeom,
+                properties: {
+                fid: null,
+                hoa_name: name || "Unnamed HOA",
+                ccr_url: ccr_url,
+                documents: documents,
+                source: "VGI submission via web map",
+                status: status || "Uncited",
+                notes: notes || null,
+                hoa_fees: fees ? parseFloat(fees) : null,
+                fees_period: period || null,
+                fee_coverage: feeCoverage,
+                member_responsibilities: memberResp,
+                member_responsibilities_notes: memberRespNotes,
+                last_updated: null,
+                editor: null,
+                last_edited_at: null,
+                last_edited_by: null,
+                edit_history: [],
+                comments: [],
+                area_m2: null,
+                area_acre: null,
+                hoa_services: null,
+                amenities: null
+                }
+            };
+
+            window.lastVgiFeature = feature;   // remember the last submission
+
+            // output JSON for copy/paste
+            document.getElementById('vgi_output').value =
+                JSON.stringify(feature, null, 2);
+
+            // add to main data and redraw HOA layer so the new HOA appears with the rest
+            if (allHoaFeatures && allHoaFeatures.features) {
+                allHoaFeatures.features.push(feature);
+                applyFilterAndDraw();
+            }
+
+            // clear the drawn polygon so it doesn't show on top of the new HOA
+            drawnItems.clearLayers();
+            pendingGeom = null;
+            };
+
+            window.downloadVgi = function () {
+              if (!window.lastVgiFeature) {
+                alert('Generate a submission first.');
+                return;
+              }
+              var json = JSON.stringify(window.lastVgiFeature, null, 2);
+              var blob = new Blob([json], { type: 'application/geo+json' });
+              var url = URL.createObjectURL(blob);
+              var a = document.createElement('a');
+              a.href = url;
+              a.download = 'hoa_submission.geojson';
+              a.click();
+              URL.revokeObjectURL(url);
+            };
+
+            // --- Edit existing HOA: details (attributes) ---
+            function getDocByType(docs, type) {
+              for (var i = 0; i < docs.length; i++) if (docs[i].type === type) return docs[i];
+              return null;
+            }
+            function startEditDetails() {
+              if (!selectedFeature || !selectedFeature.properties) return;
+              var p = selectedFeature.properties;
+              ensureDocuments(p);
+              document.getElementById('edit_hoa_name').value = p.hoa_name || '';
+              document.getElementById('edit_status').value = p.status || 'Uncited';
+              document.getElementById('edit_fees').value = (p.hoa_fees != null) ? p.hoa_fees : '';
+              document.getElementById('edit_fees_period').value = p.fees_period || '';
+              document.getElementById('edit_notes').value = p.notes || '';
+              document.querySelectorAll('input[name=edit_fee_cov]').forEach(function (cb) { cb.checked = false; });
+              document.querySelectorAll('input[name=edit_member_resp]').forEach(function (cb) { cb.checked = false; });
+              var feeCov = p.fee_coverage && Array.isArray(p.fee_coverage) ? p.fee_coverage : [];
+              var feeOther = [];
+              feeCov.forEach(function (v) {
+                if (FEE_COVERAGE_OPTIONS.indexOf(v) !== -1) {
+                  var list = document.querySelectorAll('input[name=edit_fee_cov]');
+                  for (var i = 0; i < list.length; i++) if (list[i].value === v) { list[i].checked = true; break; }
+                } else if (v && String(v).trim()) feeOther.push(String(v).trim());
+              });
+              document.getElementById('edit_fee_coverage_other').value = feeOther[0] || '';
+              var resp = p.member_responsibilities && Array.isArray(p.member_responsibilities) ? p.member_responsibilities : [];
+              var respOther = [];
+              resp.forEach(function (v) {
+                if (MEMBER_RESPONSIBILITY_OPTIONS.indexOf(v) !== -1) {
+                  var list = document.querySelectorAll('input[name=edit_member_resp]');
+                  for (var j = 0; j < list.length; j++) if (list[j].value === v) { list[j].checked = true; break; }
+                } else if (v && String(v).trim()) respOther.push(String(v).trim());
+              });
+              document.getElementById('edit_member_resp_other').value = respOther[0] || '';
+              document.getElementById('edit_member_resp_notes').value = (p.member_responsibilities_notes && String(p.member_responsibilities_notes).trim()) || '';
+              editDocPdfs = {};
+              DOCUMENT_TYPES.forEach(function (type) {
+                var slug = DOC_TYPE_SLUG[type];
+                var doc = getDocByType(p.documents, type);
+                document.getElementById('edit_doc_' + slug + '_url').value = (doc && doc.url) ? doc.url : '';
+                var statusEl = document.getElementById('edit_doc_' + slug + '_pdf_status');
+                document.getElementById('edit_doc_' + slug + '_pdf').value = '';
+                if (doc && doc.pdf) statusEl.textContent = 'PDF attached'; else statusEl.textContent = '';
+              });
+              document.getElementById('edit_edit_summary').value = '';
+              document.getElementById('editDetailsPanel').style.display = 'block';
+            }
+
+            function saveEditDetails() {
+              if (!selectedFeature || !selectedFeature.properties) return;
+              var p = selectedFeature.properties;
+              var user = getCurrentUser();
+              var summaryVal = document.getElementById('edit_edit_summary').value.trim() || 'Details updated';
+              if (!p.edit_history) p.edit_history = [];
+              p.edit_history.push({ at: new Date().toISOString(), by: user.username, summary: summaryVal });
+              p.last_edited_at = new Date().toISOString();
+              p.last_edited_by = user.username;
+              p.last_updated = p.last_edited_at;
+              p.editor = p.last_edited_by;
+              p.hoa_name = document.getElementById('edit_hoa_name').value.trim() || null;
+              p.status = document.getElementById('edit_status').value || 'Uncited';
+              var feesVal = document.getElementById('edit_fees').value.trim();
+              p.hoa_fees = feesVal ? parseFloat(feesVal) : null;
+              p.fees_period = document.getElementById('edit_fees_period').value || null;
+              p.notes = document.getElementById('edit_notes').value.trim() || null;
+              p.fee_coverage = [];
+              document.querySelectorAll('input[name=edit_fee_cov]:checked').forEach(function (cb) { p.fee_coverage.push(cb.value); });
+              var feeOtherVal = document.getElementById('edit_fee_coverage_other').value.trim();
+              if (feeOtherVal) p.fee_coverage.push(feeOtherVal);
+              p.member_responsibilities = [];
+              document.querySelectorAll('input[name=edit_member_resp]:checked').forEach(function (cb) { p.member_responsibilities.push(cb.value); });
+              var respOtherVal = document.getElementById('edit_member_resp_other').value.trim();
+              if (respOtherVal) p.member_responsibilities.push(respOtherVal);
+              p.member_responsibilities_notes = document.getElementById('edit_member_resp_notes').value.trim() || null;
+              var existingDocs = (p.documents && p.documents.length) ? p.documents.slice() : [];
+              p.documents = [];
+              DOCUMENT_TYPES.forEach(function (type) {
+                var slug = DOC_TYPE_SLUG[type];
+                var url = document.getElementById('edit_doc_' + slug + '_url').value.trim() || null;
+                var existing = getDocByType(existingDocs, type);
+                var pdf = editDocPdfs[slug] !== undefined ? editDocPdfs[slug] : (existing && existing.pdf) || null;
+                if (url || pdf) p.documents.push({ type: type, url: url, pdf: pdf });
+              });
+              p.ccr_url = (getDocByType(p.documents, "CC&R") && getDocByType(p.documents, "CC&R").url) || null;
+              document.getElementById('editDetailsPanel').style.display = 'none';
+              applyFilterAndDraw();
+              selectedFeature = null;
+              selectedFeatures = [];
+              selection = [];
+            }
+
+            function cancelEditDetails() {
+              document.getElementById('editDetailsPanel').style.display = 'none';
+            }
+
+            document.getElementById('editDetailsSave').addEventListener('click', saveEditDetails);
+            document.getElementById('editDetailsCancel').addEventListener('click', cancelEditDetails);
+
+            function buildEditCheckboxGroups() {
+              var feeWrap = document.getElementById('edit_fee_coverage_wrap');
+              if (feeWrap && feeWrap.innerHTML === '') {
+                FEE_COVERAGE_OPTIONS.forEach(function (opt) {
+                  var label = document.createElement('label');
+                  label.className = 'edit-checkbox-label';
+                  var cb = document.createElement('input');
+                  cb.type = 'checkbox';
+                  cb.name = 'edit_fee_cov';
+                  cb.value = opt;
+                  label.appendChild(cb);
+                  label.appendChild(document.createTextNode(' ' + opt));
+                  feeWrap.appendChild(label);
+                });
+              }
+              var respWrap = document.getElementById('edit_member_resp_wrap');
+              if (respWrap && respWrap.innerHTML === '') {
+                MEMBER_RESPONSIBILITY_OPTIONS.forEach(function (opt) {
+                  var label = document.createElement('label');
+                  label.className = 'edit-checkbox-label';
+                  var cb = document.createElement('input');
+                  cb.type = 'checkbox';
+                  cb.name = 'edit_member_resp';
+                  cb.value = opt;
+                  label.appendChild(cb);
+                  label.appendChild(document.createTextNode(' ' + opt));
+                  respWrap.appendChild(label);
+                });
+              }
+              var vgiFeeWrap = document.getElementById('vgi_fee_coverage_wrap');
+              if (vgiFeeWrap && vgiFeeWrap.innerHTML === '') {
+                FEE_COVERAGE_OPTIONS.forEach(function (opt) {
+                  var label = document.createElement('label');
+                  label.className = 'edit-checkbox-label';
+                  var cb = document.createElement('input');
+                  cb.type = 'checkbox';
+                  cb.name = 'vgi_fee_cov';
+                  cb.value = opt;
+                  label.appendChild(cb);
+                  label.appendChild(document.createTextNode(' ' + opt));
+                  vgiFeeWrap.appendChild(label);
+                });
+              }
+              var vgiRespWrap = document.getElementById('vgi_member_resp_wrap');
+              if (vgiRespWrap && vgiRespWrap.innerHTML === '') {
+                MEMBER_RESPONSIBILITY_OPTIONS.forEach(function (opt) {
+                  var label = document.createElement('label');
+                  label.className = 'edit-checkbox-label';
+                  var cb = document.createElement('input');
+                  cb.type = 'checkbox';
+                  cb.name = 'vgi_member_resp';
+                  cb.value = opt;
+                  label.appendChild(cb);
+                  label.appendChild(document.createTextNode(' ' + opt));
+                  vgiRespWrap.appendChild(label);
+                });
+              }
+            }
+            buildEditCheckboxGroups();
+
+            function readFileAsDataUrl(file, callback) {
+              var r = new FileReader();
+              r.onload = function () { callback(r.result); };
+              r.readAsDataURL(file);
+            }
+            DOCUMENT_TYPES.forEach(function (type) {
+              var slug = DOC_TYPE_SLUG[type];
+              var input = document.getElementById('edit_doc_' + slug + '_pdf');
+              var statusEl = document.getElementById('edit_doc_' + slug + '_pdf_status');
+              if (input && statusEl) {
+                input.addEventListener('change', function () {
+                  var file = input.files && input.files[0];
+                  if (file) {
+                    readFileAsDataUrl(file, function (dataUrl) {
+                      editDocPdfs[slug] = dataUrl;
+                      statusEl.textContent = 'New PDF selected';
+                    });
+                  } else {
+                    delete editDocPdfs[slug];
+                    statusEl.textContent = '';
+                  }
+                });
+              }
+              var vgiInput = document.getElementById('vgi_doc_' + slug + '_pdf');
+              if (vgiInput) {
+                vgiInput.addEventListener('change', function () {
+                  var file = vgiInput.files && vgiInput.files[0];
+                  if (file) readFileAsDataUrl(file, function (dataUrl) { vgiDocPdfs[slug] = dataUrl; });
+                  else delete vgiDocPdfs[slug];
+                });
+              }
+            });
+
+            // --- Edit existing HOA: shape (geometry) ---
+            function startEditShape() {
+              if (!selectedFeature || !selection.length || !hoaLayer) return;
+              var geomFeature = { type: 'Feature', geometry: selectedFeature.geometry, properties: {} };
+              var editStyle = { color: '#555', weight: 2, dashArray: '4,4', fillOpacity: 0.2 };
+              var group = L.geoJSON(geomFeature, { style: editStyle });
+              group.eachLayer(function (layer) {
+                drawnItems.addLayer(layer);
+                editingLayer = layer;
+              });
+              hoaLayer.removeLayer(selection[0]);
+              selection = [];
+
+              var summary = document.getElementById('summaryLabel');
+              summary.innerHTML =
+                '<p><strong>Editing shape.</strong> Use the edit tool (pencil icon) on the map to drag vertices, then click Save shape.</p>' +
+                '<p><button type="button" id="saveShapeBtn">Save shape</button> <button type="button" id="cancelShapeBtn">Cancel</button></p>';
+              document.getElementById('saveShapeBtn').onclick = saveEditShape;
+              document.getElementById('cancelShapeBtn').onclick = cancelEditShape;
+            }
+
+            function saveEditShape() {
+              if (!editingLayer || !selectedFeature) return;
+              selectedFeature.geometry = editingLayer.toGeoJSON().geometry;
+              drawnItems.removeLayer(editingLayer);
+              editingLayer = null;
+              selectedFeature = null;
+              selectedFeatures = [];
+              applyFilterAndDraw();
+              document.getElementById('summaryLabel').innerHTML =
+                '<p>Click on an HOA on the map to get more information.</p>' +
+                '<p>To propose an unlisted HOA, click the pentagon button on the upper-left side of the map.</p>';
+            }
+
+            function cancelEditShape() {
+              if (editingLayer && selectedFeature) {
+                drawnItems.removeLayer(editingLayer);
+                editingLayer = null;
+              }
+              selectedFeature = null;
+              selectedFeatures = [];
+              applyFilterAndDraw();
+              document.getElementById('summaryLabel').innerHTML =
+                '<p>Click on an HOA on the map to get more information.</p>' +
+                '<p>To propose an unlisted HOA, click the pentagon button on the upper-left side of the map.</p>';
+            }
+
+            // --- Document Viewer integration (uses local doc_api.py on localhost:5100) ---
+            function getFeatureFid(p) {
+              if (!p) return null;
+              return p.fid || p.id || p.feature_id || p.properties_id || null;
+            }
+
+            function openDocumentsForFeature(feature) {
+              var p = feature.properties || {};
+              var fid = getFeatureFid(p);
+              var panel = document.getElementById('docViewerPanel');
+              var list = document.getElementById('docViewerList');
+              if (!panel || !list) return;
+              list.innerHTML = '';
+              // Static mode (no doc API): build links directly from feature properties
+              if (!DOC_API_BASE) {
+                var staticDocs = getDocumentsList(p);
+                if (!staticDocs.length) {
+                  var pnone = document.createElement('p');
+                  pnone.textContent = 'No documents available.';
+                  list.appendChild(pnone);
+                } else {
+                  var sul = document.createElement('ul');
+                  staticDocs.forEach(function (d, i) {
+                    var li = document.createElement('li');
+                    var label = d.type || ('Document ' + (i + 1));
+                    var href = d.url || d.pdf;
+                    if (href) {
+                      var a = document.createElement('a');
+                      a.href = encodeURI(href);
+                      a.target = '_blank';
+                      a.rel = 'noopener noreferrer';
+                      a.textContent = label;
+                      li.appendChild(a);
+                    } else {
+                      li.textContent = label + ' — no link available';
+                    }
+                    sul.appendChild(li);
+                  });
+                  list.appendChild(sul);
+                }
+                panel.style.display = 'block';
+                return;
+              }
+              if (!fid) {
+                list.textContent = 'Document lookup not available for this feature (no fid).';
+                panel.style.display = 'block';
+                return;
+              }
+              var url = DOC_API_BASE + '/api/documents/' + encodeURIComponent(fid);
+              fetch(url)
+                .then(function (resp) { return resp.json(); })
+                .then(function (data) {
+                  var docs = data.documents || [];
+                  if (!docs.length) {
+                    var pno = document.createElement('p');
+                    pno.textContent = 'No documents available.';
+                    list.appendChild(pno);
+                    var addBtn = document.createElement('button');
+                    addBtn.type = 'button';
+                    addBtn.textContent = 'Propose a document reference';
+                    addBtn.onclick = function () { document.getElementById('vgiPanel').style.display = 'block'; window.scrollTo(0, document.getElementById('vgiPanel').offsetTop || 0); };
+                    list.appendChild(addBtn);
+                    panel.style.display = 'block';
+                    return;
+                  }
+                  var ul = document.createElement('ul');
+                  docs.forEach(function (d, i) {
+                    var li = document.createElement('li');
+                    var label = d.type || ('Document ' + (i + 1));
+                    var a = document.createElement('a');
+                    a.href = DOC_API_BASE + '/api/documents/' + encodeURIComponent(fid) + '/view?idx=' + i;
+                    a.target = '_blank';
+                    a.rel = 'noopener noreferrer';
+                    a.textContent = label + (d.source ? ' (' + d.source + ')' : '');
+                    li.appendChild(a);
+                    if (d.viewable === false) {
+                      var span = document.createElement('span');
+                      span.textContent = ' — not viewable inline';
+                      li.appendChild(span);
+                    }
+                    ul.appendChild(li);
+                  });
+                  list.appendChild(ul);
+                  panel.style.display = 'block';
+                })
+                .catch(function (err) {
+                  list.textContent = 'Error fetching documents: ' + (err && err.message ? err.message : String(err));
+                  panel.style.display = 'block';
+                });
+            }
+
+            document.getElementById('docViewerClose').addEventListener('click', function () {
+              var panel = document.getElementById('docViewerPanel'); if (panel) panel.style.display = 'none';
+            });
+
+            var policyCompareCloseBtn = document.getElementById('policyCompareClose');
+            if (policyCompareCloseBtn) policyCompareCloseBtn.addEventListener('click', closePolicyComparePanel);
+            var policyCompareCollapseBtn = document.getElementById('policyCompareCollapse');
+            if (policyCompareCollapseBtn) {
+              policyCompareCollapseBtn.addEventListener('click', function () {
+                var panel = document.getElementById('policyComparePanel');
+                if (!panel) return;
+                panel.classList.toggle('policy-compare-collapsed');
+                var expanded = !panel.classList.contains('policy-compare-collapsed');
+                policyCompareCollapseBtn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+                policyCompareCollapseBtn.textContent = expanded ? '▼' : '▶';
+              });
+            }
+            document.getElementById('docViewerPropose').addEventListener('click', function () {
+              document.getElementById('vgiPanel').style.display = 'block';
+              var panel = document.getElementById('docViewerPanel'); if (panel) panel.style.display = 'none';
+            });
+
+        }
+        </script>
+
+  </head>
+
+  <body onload="init()">
+    <h1 id="title">Homeowner Associations in Carmel Valley, San Diego 92130</h1>
+
+    <div id="filterPanel" class="filter-panel">
+      <div class="filter-row">
+        <span class="filter-label">Filter by CC&amp;R status:</span>
+        <label><input type="checkbox" id="filter_status_verified" checked> CC&amp;R Verified</label>
+        <label><input type="checkbox" id="filter_status_cited" checked> CC&amp;R Cited</label>
+        <label><input type="checkbox" id="filter_status_uncited" checked> Uncited</label>
+        <label><input type="checkbox" id="filter_status_other" checked> Other / unknown</label>
+        <span class="filter-sep">|</span>
+        <span class="filter-label">Color by:</span>
+        <select id="symbologySelect">
+          <option value="status">Status</option>
+          <option value="fee">Monthly fee</option>
+        </select>
+        <label class="filter-fills"><input type="checkbox" id="filter_show_fills" checked> Show fills</label>
+        <span class="filter-sep">|</span>
+        <button type="button" id="refreshDataBtn">Refresh data</button>
+        <label class="filter-auto-refresh">
+          Auto-refresh:
+          <select id="autoRefreshSelect">
+            <option value="0">Off</option>
+            <option value="5">Every 5 min</option>
+            <option value="10">Every 10 min</option>
+          </select>
+        </label>
+      </div>
+      <div class="filter-row filter-tags-row">
+        <span class="filter-label">Filter by fee covers (amenities):</span>
+        <div id="filter_fee_coverage_wrap" class="filter-checkbox-wrap"></div>
+        <span class="filter-sep">|</span>
+        <span class="filter-label">Filter by member responsibilities:</span>
+        <div id="filter_member_resp_wrap" class="filter-checkbox-wrap"></div>
+      </div>
+      <div class="filter-row filter-tags-row">
+        <span class="filter-label">Policy filters:</span>
+        <span class="filter-sub">Pets allowed:</span>
+        <label><input type="checkbox" id="filter_pets_yes" checked> Yes</label>
+        <label><input type="checkbox" id="filter_pets_no" checked> No</label>
+        <label><input type="checkbox" id="filter_pets_restricted" checked> Restricted</label>
+        <span class="filter-sep">|</span>
+        <span class="filter-sub">Rentals allowed:</span>
+        <label><input type="checkbox" id="filter_rentals_yes" checked> Yes</label>
+        <label><input type="checkbox" id="filter_rentals_no" checked> No</label>
+        <label><input type="checkbox" id="filter_rentals_restricted" checked> Restricted</label>
+        <span class="filter-sep">|</span>
+        <span class="filter-sub">Short-term rentals:</span>
+        <label><input type="checkbox" id="filter_short_yes" checked> Yes</label>
+        <label><input type="checkbox" id="filter_short_no" checked> No</label>
+        <span class="filter-sep">|</span>
+        <span class="filter-label">Filter by amenities:</span>
+        <div id="filter_amenities_wrap" class="filter-checkbox-wrap"></div>
+      </div>
+    </div>
+
+    <div id="profilePanel" class="profile-panel">
+      <h3 class="profile-heading">Account / Profile <span class="profile-note">(stored locally until backend login)</span></h3>
+      <p>
+        <label>Display name (for edits &amp; comments): <input id="profile_username" type="text" size="24" placeholder="e.g. john@example.com or username"></label>
+      </p>
+      <p>
+        <label>Flair: <select id="profile_flair">
+          <option value="">— None —</option>
+          <option value="Real estate agent">Real estate agent</option>
+          <option value="Homeowner">Homeowner</option>
+          <option value="Tenant">Tenant</option>
+          <option value="Other">Other</option>
+        </select></label>
+      </p>
+      <p>
+        <label><input type="checkbox" id="profile_hoa_member"> I am a member of an HOA</label>
+      </p>
+      <p class="profile-hoa-name-row">
+        <label>If yes, which HOA? (optional): <input id="profile_hoa_name" type="text" size="36" placeholder="HOA name if you want to share"></label>
+      </p>
+      <p>
+        <button type="button" id="profileSave">Save profile</button>
+      </p>
+    </div>
+
+    <div id="mapid"></div>
+    <div id="summaryLabel">
+      <p>Click on an HOA on the map to get more information.</p>
+      <p>To propose an unlisted HOA, click the pentagon button on the upper-left side of the map.</p>
+    </div>
+
+    <div id="policyComparePanel" class="policy-compare-panel" style="display:none;" aria-label="Policy comparison">
+      <div class="policy-compare-toolbar">
+        <button type="button" id="policyCompareCollapse" class="policy-compare-collapse-btn" aria-expanded="true" aria-controls="policyCompareBody" title="Collapse or expand">▼</button>
+        <h3 class="policy-compare-title">Policy comparison</h3>
+        <span class="policy-compare-hint">Shift-click polygons to add (max 3). Close or click the map to clear.</span>
+        <button type="button" id="policyCompareClose" class="policy-compare-close-btn">Close</button>
+      </div>
+      <div id="policyCompareBody" class="policy-compare-body">
+        <div id="policyCompareTableWrap" class="policy-compare-table-wrap"></div>
+      </div>
+    </div>
+
+    <div id="docViewerPanel" class="doc-viewer-panel" style="display:none;">
+      <h3>Documents</h3>
+      <div id="docViewerList"></div>
+      <p id="docViewerFooter">
+        <button type="button" id="docViewerClose">Close</button>
+        <button type="button" id="docViewerPropose">Propose a document reference</button>
+      </p>
+    </div>
+    <div id="editDetailsPanel" class="edit-panel" style="display:none;">
+      <h3>Edit HOA details</h3>
+      <p>
+        <label>HOA name: <input id="edit_hoa_name" type="text" size="40"></label>
+      </p>
+      <p>
+        <label>Status:
+          <select id="edit_status">
+            <option value="CC&R Verified">CC&amp;R Verified</option>
+            <option value="CC&R Cited">CC&amp;R Cited</option>
+            <option value="Uncited">Uncited</option>
+          </select>
+        </label>
+      </p>
+      <p>
+        <label>Fee amount: <input id="edit_fees" type="number" step="0.01"></label>
+        <label>Fee period:
+          <select id="edit_fees_period">
+            <option value="">(none)</option>
+            <option value="Monthly">Monthly</option>
+            <option value="Quarterly">Quarterly</option>
+            <option value="Annually">Annually</option>
+          </select>
+        </label>
+      </p>
+      <h4 class="edit-docs-heading">Fee coverage (what fees cover)</h4>
+      <div id="edit_fee_coverage_wrap" class="edit-checkbox-group"></div>
+      <p><label>Other: <input type="text" id="edit_fee_coverage_other" placeholder="Custom tag" size="30"></label></p>
+      <h4 class="edit-docs-heading">Member responsibilities</h4>
+      <div id="edit_member_resp_wrap" class="edit-checkbox-group"></div>
+      <p><label>Other: <input type="text" id="edit_member_resp_other" size="30"></label></p>
+      <p><label>Responsibilities notes: <textarea id="edit_member_resp_notes" rows="2" cols="50"></textarea></label></p>
+      <h4 class="edit-docs-heading">Documents (URL and/or upload PDF)</h4>
+      <p class="edit-docs-note">CC&amp;R, Articles of Incorporation, Bylaws, and Rules &amp; Regulations. With a backend, PDFs would be stored on the server; for now they are embedded in the data.</p>
+      <p class="edit-doc-row">
+        <label>CC&amp;R URL: <input id="edit_doc_ccr_url" type="url" size="36"></label>
+        <label> PDF: <input type="file" id="edit_doc_ccr_pdf" accept=".pdf"></label>
+        <span id="edit_doc_ccr_pdf_status" class="doc-pdf-status"></span>
+      </p>
+      <p class="edit-doc-row">
+        <label>Articles of Inc. URL: <input id="edit_doc_articles_url" type="url" size="36"></label>
+        <label> PDF: <input type="file" id="edit_doc_articles_pdf" accept=".pdf"></label>
+        <span id="edit_doc_articles_pdf_status" class="doc-pdf-status"></span>
+      </p>
+      <p class="edit-doc-row">
+        <label>Bylaws URL: <input id="edit_doc_bylaws_url" type="url" size="36"></label>
+        <label> PDF: <input type="file" id="edit_doc_bylaws_pdf" accept=".pdf"></label>
+        <span id="edit_doc_bylaws_pdf_status" class="doc-pdf-status"></span>
+      </p>
+      <p class="edit-doc-row">
+        <label>Rules &amp; Regs URL: <input id="edit_doc_rules_url" type="url" size="36"></label>
+        <label> PDF: <input type="file" id="edit_doc_rules_pdf" accept=".pdf"></label>
+        <span id="edit_doc_rules_pdf_status" class="doc-pdf-status"></span>
+      </p>
+      <p>
+        <label>Notes: <textarea id="edit_notes" rows="2" cols="50"></textarea></label>
+      </p>
+      <p>
+        <label>Edit summary (for history): <input id="edit_edit_summary" type="text" size="40" placeholder="e.g. Updated fees and fee coverage"></label>
+      </p>
+      <p>
+        <button type="button" id="editDetailsSave">Save</button>
+        <button type="button" id="editDetailsCancel">Cancel</button>
+      </p>
+    </div>
+    <div id="vgiPanel" style="display:none;">
+      <h2>Propose a new HOA polygon</h2>
+      <p>
+        1. Use the draw tool on the map to trace a missing HOA.<br>
+        2. Fill in the fields below.<br>
+        3. Click “Generate submission,” then "Download GeoJSON" to save the file, or copy from the text area below.
+      </p>
+
+      <p>
+        <label>HOA name:
+          <input id="vgi_hoa_name" type="text">
+        </label>
+      </p>
+
+      <p>
+        <label>Status:
+          <select id="vgi_status">
+            <option value="CC&R Cited">CC&amp;R Cited</option>
+            <option value="Uncited" selected>Uncited</option>
+          </select>
+        </label>
+      </p>
+
+      <p>
+        <label>Fee amount:
+          <input id="vgi_fees" type="number" step="0.01">
+        </label>
+        <label>Fee period:
+          <select id="vgi_fees_period">
+            <option value="">(none)</option>
+            <option value="Monthly">Monthly</option>
+            <option value="Quarterly">Quarterly</option>
+            <option value="Annually">Annually</option>
+          </select>
+        </label>
+      </p>
+
+      <p class="vgi-docs-heading"><strong>Fee coverage (what fees cover)</strong></p>
+      <div id="vgi_fee_coverage_wrap" class="edit-checkbox-group"></div>
+      <p><label>Other: <input type="text" id="vgi_fee_coverage_other" placeholder="Custom tag" size="30"></label></p>
+      <p class="vgi-docs-heading"><strong>Member responsibilities</strong></p>
+      <div id="vgi_member_resp_wrap" class="edit-checkbox-group"></div>
+      <p><label>Other: <input type="text" id="vgi_member_resp_other" size="30"></label></p>
+      <p><label>Responsibilities notes: <textarea id="vgi_member_resp_notes" rows="2" cols="50"></textarea></label></p>
+
+      <p class="vgi-docs-heading"><strong>Documents (URL and/or upload PDF)</strong></p>
+      <p class="vgi-doc-row">
+        <label>CC&amp;R URL: <input id="vgi_doc_ccr_url" type="url" size="36"></label>
+        <label> PDF: <input type="file" id="vgi_doc_ccr_pdf" accept=".pdf"></label>
+      </p>
+      <p class="vgi-doc-row">
+        <label>Articles of Inc. URL: <input id="vgi_doc_articles_url" type="url" size="36"></label>
+        <label> PDF: <input type="file" id="vgi_doc_articles_pdf" accept=".pdf"></label>
+      </p>
+      <p class="vgi-doc-row">
+        <label>Bylaws URL: <input id="vgi_doc_bylaws_url" type="url" size="36"></label>
+        <label> PDF: <input type="file" id="vgi_doc_bylaws_pdf" accept=".pdf"></label>
+      </p>
+      <p class="vgi-doc-row">
+        <label>Rules &amp; Regs URL: <input id="vgi_doc_rules_url" type="url" size="36"></label>
+        <label> PDF: <input type="file" id="vgi_doc_rules_pdf" accept=".pdf"></label>
+      </p>
+
+      <p>
+        <label>Notes:<br>
+          <textarea id="vgi_notes" rows="3" cols="50"></textarea>
+        </label>
+      </p>
+
+      <p>
+        <button type="button" onclick="submitVgi()">Generate submission</button>
+        <button type="button" onclick="downloadVgi()">Download GeoJSON</button>
+      </p>
+
+      <p>Copy or download the GeoJSON for your submission:</p>
+      <textarea id="vgi_output" rows="10" cols="80" readonly></textarea>
+
+    </div>
+
+    <p id="test_output"></p>
+  </body>
+</html>

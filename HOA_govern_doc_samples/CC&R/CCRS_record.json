@@ -1,0 +1,41 @@
+{
+  "hoa_name": "West Highlands Pacific Homeowners Association",
+  "document_type": "CC&Rs",
+  "effective_date": null,
+  "recorded_date": "2003-05-07",
+  "county": "San Diego",
+  "state": "CA",
+  "source_path": "HOA_govern_doc_samples/CC&R/CCRS.pdf",
+  "pets": {
+    "allowed": true,
+    "restrictions": "Only commonly recognized household pets permitted; no animals, birds, or fowl of other types. Maximum of 4 household pets per unit at any one time."
+  },
+  "rentals": {
+    "allowed": null,
+    "short_term_allowed": null,
+    "min_lease_days": null,
+    "restrictions": "Document does not contain explicit rental/leasing restrictions. Board Rules and Regulations may impose additional limits."
+  },
+  "dues": {
+    "annual_amount": 1200.0,
+    "monthly_amount": null,
+    "special_assessment_cap": null,
+    "notes": "Initial maximum annual regular assessment: $1,200 per Subdivision Interest. Board sets the annual assessment each year. Special assessments subject to CA Civil Code §1366. Reserve fund maintained separately; inter-fund transfers allowed temporarily."
+  },
+  "parking": {
+    "restrictions": "No Commercial Vehicles (those displaying business advertising) or Recreational Vehicles (motorhomes, trailers, boats, campers) on subdivision interest or street except: loading/unloading ≤48 hours per 7-day period; visiting guests with Board written consent; or in designated RV spaces if provided. No vehicle repair/servicing visible from adjacent property. No car washing on streets or driveways. Streets must be clear during scheduled street cleaning."
+  },
+  "amenities": [
+    "Common Area open space parcels",
+    "Recreational facilities",
+    "Swimming pool",
+    "Spa",
+    "RV parking spaces (on select lots)"
+  ],
+  "architectural_control": "Architectural Review Committee (ARC) appointed by the Board. Approval required before any improvements: buildings, fences, walls, pools, spas, ponds, fountains, landscaping, stonework, concrete work, mechanical/plumbing/electrical, awnings, patio covers. Brush Management Zone One restrictions apply to combustible structures.",
+  "amendment_vote_threshold": "67% of voting power for standard amendments; 75% of voting power for material/Declaration amendments (Article XI, Section 2 & 3). Court-order reduction of threshold is permitted under CA Civil Code §1356.",
+  "board_size": null,
+  "notes": "Binding arbitration clause per Federal Arbitration Act (Article IX, Section 2) — waives jury right. Association located within Multiple Habitat Planning Area (MHPA) with native plant/wildlife covenants. Recorded by First American Title, San Diego County Recorder Doc #2003-603E.",
+  "extraction_confidence": "high",
+  "extraction_method": "llm"
+}

@@ -1,0 +1,41 @@
+{
+  "hoa_name": "NEWPHR Maintenance Association",
+  "document_type": "CC&Rs with Articles and Bylaws",
+  "effective_date": null,
+  "recorded_date": "2009-08-28",
+  "county": "San Diego",
+  "state": "CA",
+  "source_path": "HOA_govern_doc_samples/CC&R/NEWPHR Maintenance Association - CC&Rs with Articles and Bylaws.pdf",
+  "pets": {
+    "allowed": null,
+    "restrictions": "Not found in pages reviewed via OCR. Document is 111 pages; pet policy likely in Use Restrictions article not yet sampled."
+  },
+  "rentals": {
+    "allowed": null,
+    "short_term_allowed": null,
+    "min_lease_days": null,
+    "restrictions": "Declaration explicitly does not limit Declarant's right to market, sell, lease, or dispose of parcels. Owner rental rights not explicitly restricted in pages reviewed."
+  },
+  "dues": {
+    "annual_amount": null,
+    "monthly_amount": null,
+    "special_assessment_cap": null,
+    "notes": "Multi-component cost center assessment structure (Article 5). Regular Assessments + Cost Center Assessment Components assessed separately. Special Assessments available for extraordinary expenses (Section 5.4). Delinquent assessments accrue additional charges, lien rights under CA Civil Code §1367."
+  },
+  "parking": {
+    "restrictions": "Not found in pages reviewed via OCR."
+  },
+  "amenities": [
+    "Urban Amenity Area",
+    "Trails",
+    "Parkways and landscape areas",
+    "Detention basins and drainage facilities",
+    "Maintenance Responsibility Areas"
+  ],
+  "architectural_control": "Architectural committee referenced. Specific review process not captured in pages reviewed via OCR.",
+  "amendment_vote_threshold": "67% of Voting Power of the Maintenance Association (Article 14, Section 14.1). Certain articles (e.g. Article 4) require Declarant's prior written consent to amend.",
+  "board_size": "5 directors representing different Areas. Upon expiration of Class C (Declarant) membership, representatives shift to Class A/B members.",
+  "notes": "Fully scanned PDF — no embedded text layer. Extracted via targeted OCR (poppler pdftoppm + tesseract) on sampled pages. This is a larger mixed-use master association with multiple sub-areas ('Sierra Highlands', 'Hotel Property', 'Urban Amenity Area'), suggesting a master/sub-association structure. Recorded by Chicago Title Company. Attorney: Luce, Forward, Hamilton & Scripps LLP. Several fields require full-document OCR for completion.",
+  "extraction_confidence": "low",
+  "extraction_method": "ocr (partial — sampled pages only)"
+}

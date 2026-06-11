@@ -1,0 +1,43 @@
+{
+  "hoa_name": "Torrey Hills Master Association",
+  "document_type": "First Amendment to Declaration of Restrictions",
+  "effective_date": "2005-07-28",
+  "recorded_date": "2005-07-28",
+  "county": "San Diego",
+  "state": "CA",
+  "source_path": "HOA_govern_doc_samples/CC&R/cc_rs_-_amended_searchable.pdf",
+  "pets": {
+    "allowed": true,
+    "restrictions": "No animals raised, bred, or kept except a reasonable number of dogs, cats, or household pets. 'Reasonable number' subject to Board interpretation and nuisance standards. Pets must be kept in enclosed yard, enclosure, or on leash. Owner liable for damage or unreasonable noise caused by their animals or those of tenants/guests. Waste must be cleaned up immediately. (Section 10.6)"
+  },
+  "rentals": {
+    "allowed": null,
+    "short_term_allowed": null,
+    "min_lease_days": null,
+    "restrictions": "No explicit short-term rental restriction found in this document. This is a First Amendment to the original 1998 declaration, amending only Article 3 (voting by delegates). Full rental policy would be in the Original Declaration (recorded 1998-03-27, San Diego County File/Page 1998-0170035)."
+  },
+  "dues": {
+    "annual_amount": null,
+    "monthly_amount": null,
+    "special_assessment_cap": null,
+    "notes": "Delinquent assessments bear interest at 12% per annum starting 30 days after due. Late charges: $10.00 or 10% of delinquent assessment, whichever is greater. Complex master/sub-association structure with multiple cost centers. Assessment amounts not specified in this amendment."
+  },
+  "parking": {
+    "restrictions": "No recreational off-road motor vehicles within Master Association Property (Section 6.5). Garages must be used for vehicular parking of owner-occupied cars — conversion to other uses prohibited. No vehicle repair or storage visible from other properties."
+  },
+  "amenities": [
+    "Open space areas",
+    "Brush management zones",
+    "Slope maintenance areas",
+    "Entryways and lighting",
+    "Drainage facilities",
+    "Trails (planned, not guaranteed)",
+    "Street medians and parkways"
+  ],
+  "architectural_control": "Architectural review referenced. Full provisions in Original Declaration (1998). Amendment does not modify these articles.",
+  "amendment_vote_threshold": "66-2/3% of total Voting Power of Master Association AND at least 66-2/3% of Class A (non-Declarant) voting power required for amendments (Article 12, Section 12.3(b)). Guest Builder consent required for certain changes.",
+  "board_size": "Three classes of voting membership (Class A: Owners; Class B: Declarant and Guest Builders — 3x votes; Class C: Declarant-appointed directors). Class C membership and director appointment rights terminate upon Declarant's election.",
+  "notes": "This is a FIRST AMENDMENT (recorded 2005) to the original 1998 Declaration of Restrictions. The amendment modifies only Article 3, Section 3.7(b)(iv) — Voting by Delegates. Most policy provisions (rentals, dues amounts, full use restrictions) are in the Original Declaration at San Diego County File/Page 1998-0170035. Master Association governs up to ~993 residences in Torrey Hills, City of San Diego. Original declaration date: 1998-03-27.",
+  "extraction_confidence": "medium",
+  "extraction_method": "llm (pdfplumber)"
+}
