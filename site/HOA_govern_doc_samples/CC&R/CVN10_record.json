@@ -1,0 +1,38 @@
+{
+  "hoa_name": "Carmel Valley Neighborhood 10 North Homeowners Association",
+  "document_type": "CC&Rs",
+  "effective_date": null,
+  "recorded_date": null,
+  "county": "San Diego",
+  "state": "CA",
+  "source_path": "HOA_govern_doc_samples/CC&R/CVN10 CCRs.pdf",
+  "pets": {
+    "allowed": true,
+    "restrictions": "Maximum of 4 household pets per unit at any one time; maximum of 2 of any one species. (Page 35)"
+  },
+  "rentals": {
+    "allowed": null,
+    "short_term_allowed": null,
+    "min_lease_days": null,
+    "restrictions": "No explicit rental restriction found in extractable text. Board Rules and Regulations may impose additional limits."
+  },
+  "dues": {
+    "annual_amount": null,
+    "monthly_amount": null,
+    "special_assessment_cap": null,
+    "notes": "Board may raise annual assessments up to 20% per year without membership approval. Special assessments capped at 5% of budgeted gross assessments for the year without a member vote. Late charges capped at 10% of delinquent amount or $10, whichever is greater. Interest on delinquent assessments not to exceed 12% annually."
+  },
+  "parking": {
+    "restrictions": "Commercial Vehicles (those with business advertising) and Recreational Vehicles (motorhomes, trailers, boats, campers) subject to restrictions. Specific details partially obscured by PDF text layer artifact — same restriction pattern as West Highlands Pacific HOA (sister Pardee Homes development)."
+  },
+  "amenities": [
+    "Common Area open space",
+    "Recreational facilities"
+  ],
+  "architectural_control": "Architectural committee approval required before constructing or modifying any building, fence, wall, hedge, or improvement. Plans and specifications must be submitted showing location, design, and all items required under CC&Rs. Approval based on harmony of external design, location, and materials.",
+  "amendment_vote_threshold": "75% of members (standard amendments require written consent of 75% of voting power)",
+  "board_size": null,
+  "notes": "PDF has severe dual-layer text artifact (character-level doubling from overlapping OCR and image layers). Extraction used pdfplumber + deduplication pass. Some field values may be incomplete due to text quality — recommend re-extracting with OCR override once pytesseract/poppler are confirmed working in deployment. Recorded in San Diego County by Pardee Construction Company.",
+  "extraction_confidence": "medium",
+  "extraction_method": "llm (pdfplumber+dedup) — manual review from clean text"
+}
